@@ -9,7 +9,7 @@ contract LoyaltyRewardToken is ERC20, Ownable {
 
     // Initial supply and treasury fund
     uint256 public constant INITIAL_SUPPLY = 1000000 * (10 ** 18); // Including decimals
-    uint256 public constant TREASURY_FUND = 300000 * (10 ** 18);
+    uint256 public constant TREASURY_FUND = 500000 * (10 ** 18);
 
     // Decay mechanism
     uint256 public constant DECAY_RATE = 5; // 5%

@@ -78,33 +78,39 @@ contract ECommerceLoyalty {
         nextProductId++;
     }
 
-    function purchaseProduct(uint256 _productId, uint256 _quantity, bool fullPaymentInMatic) external {
-        Product memory product = products[_productId];
-        require(product.productId != 0, "Product not found");
-        require(product.quantity >= _quantity);
+    function purchaseProducts(uint256[] memory _productIds, uint256[] memory _quantities, bool[] _fullPaymentInMatic, uint256 totalCost, uint256 totalRewardPoints, uint256 totalLoyaltyTokensUsed) external payable {
+        
+        require(_productIds.length == _quantities.length, "Mismatch in product IDs and quantities length");
 
-        product.quantity -= _quantity;
-
-        uint256 totalCost = product.price * _quantity;
         uint256 commission = (totalCost * COMMISSION) / 100; // 5% commission in MATIC
-        uint256 payableInMatic = totalCost - product.loyaltyTokensAccepted * _quantity; // Remaining amount to be paid in MATIC
+        uint256 payableInMatic = totalCost - totalLoyaltyTokensUsed; // Remaining amount to be paid in MATIC
 
         require(msg.value >= payableInMatic, "Incorrect MATIC sent");
-        require(loyaltyToken.transferFrom(msg.sender, product.sellerAddress, product.loyaltyTokensAccepted), "FLIP transfer failed");
+        require(loyaltyToken.transferFrom(msg.sender, loyaltyToken.address, totalLoyaltyTokensUsed), "FLIP transfer failed");
 
         // Transfer commission to the contract
         payable(address(this)).transfer(commission);
 
-        // Transfer remaining MATIC (after commission) to the seller
-        payable(product.sellerAddress).transfer(payableInMatic - commission);
+        // Distribute the remaining MATIC (after commission) among sellers
+        for (uint256 i = 0; i < _productIds.length; i++) {
+            Product memory product = products[_productIds[i]];
+            uint256 productCost = product.price * _quantities[i];
 
-        // Issue loyalty points to the buyer
-        loyaltyToken.transfer(msg.sender, product.rewardPoints * _quantity);
+            if(_fullPaymentInMatic[i]) {
+                payable(product.sellerAddress).transfer(productCost - (productCost * COMMISSION) / 100); // Deducting commission for each product
+            } else {
+                payable(product.sellerAddress).transfer(productCost - product.loyaltyTokensAccepted - (productCost * COMMISSION) / 100); // Deducting commission for each product
+                loyaltyToken.transfer(product.sellerAddress, product.loyaltyTokensAccepted);
+            }
 
-        // Record the order
-        orders[nextOrderId] = Order(nextOrderId, msg.sender, _productId, _quantity);
-        users[msg.sender].orderIds.push(nextOrderId);
-        nextOrderId++;
+            // Record the order
+            orders[nextOrderId] = Order(nextOrderId, msg.sender, _productIds[i], _quantities[i]);
+            users[msg.sender].orderIds.push(nextOrderId);
+            nextOrderId++;
+        }
+
+        // Issue total loyalty points to the buyer
+        loyaltyToken.transfer(msg.sender, totalRewardPoints);
     }
 
     // ... Additional functions for other functionalities ...
@@ -115,7 +121,7 @@ contract ECommerceLoyalty {
         uint256 maticAmount = lrtAmount.mul(RATE);
 
         // Transfer LRT from seller to this contract
-        require(loyaltyToken.transferFrom(msg.sender, address(this), lrtAmount), "LRT transfer failed");
+        require(loyaltyToken.transferFrom(msg.sender, loyaltyToken.address, lrtAmount), "LRT transfer failed");
 
         // Send MATIC to seller
         payable(msg.sender).transfer(maticAmount);
@@ -127,7 +133,7 @@ contract ECommerceLoyalty {
         uint256 lrtAmount = msg.value.div(RATE);
 
         // Ensure the contract has enough LRT
-        require(loyaltyToken.balanceOf(address(this)) >= lrtAmount, "Not enough LRT in contract");
+        require(loyaltyToken.balanceOf(loyaltyToken.address) >= lrtAmount, "Not enough LRT in contract");
 
         // Transfer LRT to the seller
         require(loyaltyToken.transfer(msg.sender, lrtAmount), "LRT transfer failed");
