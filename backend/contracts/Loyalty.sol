@@ -18,9 +18,12 @@ contract ECommerceLoyalty {
 
     struct Product {
         uint256 productId;
+        uint256 quantity;
         address sellerAddress;
         uint256 price;
         uint256 rewardPoints;
+        uint256 loyaltyTokensAccepted; // how many loyalty tokens are accepted.
+        string imageURI; // for storing the image of product
     }
 
     struct Order {
@@ -36,6 +39,7 @@ contract ECommerceLoyalty {
 
     // Exchange rates (for simplicity, assuming 1 LRT = 1 MATIC)
     uint256 public constant RATE = 1e18; // 1 LRT = 1 MATIC (taking into account 18 decimals)
+    uint256 public constant COMMISSION = 5; // 5% commission for Flipkart.
 
     mapping(address => User) public users;
     mapping(address => Seller) public sellers;
@@ -68,19 +72,33 @@ contract ECommerceLoyalty {
         sellers[msg.sender] = Seller(msg.sender, new uint256[](0));
     }
 
-    function addProduct(uint256 _price, uint256 _rewardPoints) external onlySeller {
-        products[nextProductId] = Product(nextProductId, msg.sender, _price, _rewardPoints);
+    function addProduct(uint256 _price, uint256 _rewardPoints, uint256 _quantity, string memory _imageURI) external onlySeller {
+        products[nextProductId] = Product(nextProductId, _quantity, msg.sender, _price, _rewardPoints, _imageURI);
         sellers[msg.sender].productIds.push(nextProductId);
         nextProductId++;
     }
 
-    function purchaseProduct(uint256 _productId, uint256 _quantity) external {
+    function purchaseProduct(uint256 _productId, uint256 _quantity, bool fullPaymentInMatic) external {
         Product memory product = products[_productId];
         require(product.productId != 0, "Product not found");
+        require(product.quantity >= _quantity);
 
-        // Transfer funds and issue loyalty points
-        // This is a simplified example; in a real-world scenario, you'd use an ERC20 token for payments as well
-        payable(product.sellerAddress).transfer(product.price * _quantity);
+        product.quantity -= _quantity;
+
+        uint256 totalCost = product.price * _quantity;
+        uint256 commission = (totalCost * COMMISSION) / 100; // 5% commission in MATIC
+        uint256 payableInMatic = totalCost - product.loyaltyTokensAccepted * _quantity; // Remaining amount to be paid in MATIC
+
+        require(msg.value >= payableInMatic, "Incorrect MATIC sent");
+        require(loyaltyToken.transferFrom(msg.sender, product.sellerAddress, product.loyaltyTokensAccepted), "FLIP transfer failed");
+
+        // Transfer commission to the contract
+        payable(address(this)).transfer(commission);
+
+        // Transfer remaining MATIC (after commission) to the seller
+        payable(product.sellerAddress).transfer(payableInMatic - commission);
+
+        // Issue loyalty points to the buyer
         loyaltyToken.transfer(msg.sender, product.rewardPoints * _quantity);
 
         // Record the order
