@@ -1,8 +1,11 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; // Interface for ERC20 token
+import "@openzeppelin/contracts/utils/math/SafeMath.sol"; // SafeMath
 
 contract ECommerceLoyalty {
+    using SafeMath for uint256;
 
     // Structs
     struct User {
@@ -72,13 +75,13 @@ contract ECommerceLoyalty {
         sellers[msg.sender] = Seller(msg.sender, new uint256[](0));
     }
 
-    function addProduct(uint256 _price, uint256 _rewardPoints, uint256 _quantity, string memory _imageURI) external onlySeller {
-        products[nextProductId] = Product(nextProductId, _quantity, msg.sender, _price, _rewardPoints, _imageURI);
+    function addProduct(uint256 _quantity, uint256 _price, uint256 _rewardPoints, uint256 loyaltyTokensAccepted, string memory _imageURI) external onlySeller {
+        products[nextProductId] = Product(nextProductId, _quantity, msg.sender, _price, _rewardPoints, loyaltyTokensAccepted, _imageURI);
         sellers[msg.sender].productIds.push(nextProductId);
         nextProductId++;
     }
 
-    function purchaseProducts(uint256[] memory _productIds, uint256[] memory _quantities, bool[] _fullPaymentInMatic, uint256 totalCost, uint256 totalRewardPoints, uint256 totalLoyaltyTokensUsed) external payable {
+    function purchaseProducts(uint256[] memory _productIds, uint256[] memory _quantities, bool[] memory _fullPaymentInMatic, uint256 totalCost, uint256 totalRewardPoints, uint256 totalLoyaltyTokensUsed) external payable {
         
         require(_productIds.length == _quantities.length, "Mismatch in product IDs and quantities length");
 
@@ -86,7 +89,7 @@ contract ECommerceLoyalty {
         uint256 payableInMatic = totalCost - totalLoyaltyTokensUsed; // Remaining amount to be paid in MATIC
 
         require(msg.value >= payableInMatic, "Incorrect MATIC sent");
-        require(loyaltyToken.transferFrom(msg.sender, loyaltyToken.address, totalLoyaltyTokensUsed), "FLIP transfer failed");
+        require(loyaltyToken.transferFrom(msg.sender, address(loyaltyToken), totalLoyaltyTokensUsed), "Loyalty Token transfer failed");
 
         // Transfer commission to the contract
         payable(address(this)).transfer(commission);
@@ -121,36 +124,36 @@ contract ECommerceLoyalty {
         uint256 maticAmount = lrtAmount.mul(RATE);
 
         // Transfer LRT from seller to this contract
-        require(loyaltyToken.transferFrom(msg.sender, loyaltyToken.address, lrtAmount), "LRT transfer failed");
+        require(loyaltyToken.transferFrom(msg.sender, address(loyaltyToken), lrtAmount), "LRT transfer failed");
 
         // Send MATIC to seller
         payable(msg.sender).transfer(maticAmount);
     }
 
     // Function to exchange MATIC for LRT
-    function exchangeMATICForLRT() external payable {
+    function exchangeMATICForLRT() public payable {
         require(msg.value > 0, "MATIC amount should be greater than 0");
         uint256 lrtAmount = msg.value.div(RATE);
 
         // Ensure the contract has enough LRT
-        require(loyaltyToken.balanceOf(loyaltyToken.address) >= lrtAmount, "Not enough LRT in contract");
+        require(loyaltyToken.balanceOf(address(loyaltyToken)) >= lrtAmount, "Not enough LRT in contract");
 
         // Transfer LRT to the seller
         require(loyaltyToken.transfer(msg.sender, lrtAmount), "LRT transfer failed");
     }
 
     // In case you want to update the LRT token address (for flexibility)
-    function setLRTToken(address _lrtToken) external onlyOwner {
-        lrtToken = IERC20(_lrtToken);
+    function setLRTToken(address _lrtToken) external onlyAdmin {
+        loyaltyToken = IERC20(_lrtToken);
     }
 
     // To withdraw accidentally sent tokens or MATIC from the contract
-    function withdrawTokens(address tokenAddress, uint256 amount) external onlyOwner {
-        IERC20(token).transfer(owner, amount);
+    function withdrawTokens(uint256 amount) external onlyAdmin {
+        loyaltyToken.transfer(admin, amount);
     }
 
-    function withdrawMATIC(uint256 amount) external onlyOwner {
-        payable(owner).transfer(amount);
+    function withdrawMATIC(uint256 amount) external onlyAdmin {
+        payable(admin).transfer(amount);
     }
 
     // This function is executed on plain Ether transfers
