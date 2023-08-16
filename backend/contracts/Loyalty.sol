@@ -53,6 +53,16 @@ contract ECommerceLoyalty {
     uint256 public nextProductId = 1;
     uint256 public nextOrderId = 1;
 
+    // Events
+    event SellerRegistered(address indexed sellerAddress);
+    event ProductAdded(uint256 indexed productId, address indexed sellerAddress, string name, uint256 price);
+    event ProductPurchased(uint256 indexed orderId, address indexed buyerAddress, uint256 indexed productId, uint256 quantity);
+    event LRTExchangedForMATIC(address indexed sellerAddress, uint256 lrtAmount, uint256 maticAmount);
+    event MATICExchangedForLRT(address indexed sellerAddress, uint256 maticAmount, uint256 lrtAmount);
+    event LRTTokenAddressUpdated(address indexed admin, address newLRTTokenAddress);
+    event TokensWithdrawn(address indexed admin, uint256 amount);
+    event MATICWithdrawn(address indexed admin, uint256 amount);
+
     // Modifiers
     modifier onlyAdmin() {
         require(msg.sender == admin, "Only admin can call this function");
@@ -74,11 +84,16 @@ contract ECommerceLoyalty {
     function registerSeller() external {
         require(sellers[msg.sender].sellerAddress == address(0), "Seller already registered");
         sellers[msg.sender] = Seller(msg.sender, new uint256[](0));
+
+        emit SellerRegistered(msg.sender);
     }
 
     function addProduct(string memory name, uint256 _quantity, uint256 _price, uint256 _rewardPoints, uint256 loyaltyTokensAccepted, string memory _imageURI) external onlySeller {
         products[nextProductId] = Product(nextProductId, name, _quantity, msg.sender, _price, _rewardPoints, loyaltyTokensAccepted, _imageURI);
         sellers[msg.sender].productIds.push(nextProductId);
+
+        emit ProductAdded(nextProductId, msg.sender, name, _price);
+
         nextProductId++;
     }
 
@@ -110,6 +125,9 @@ contract ECommerceLoyalty {
             // Record the order
             orders[nextOrderId] = Order(nextOrderId, msg.sender, _productIds[i], _quantities[i]);
             users[msg.sender].orderIds.push(nextOrderId);
+
+            emit ProductPurchased(nextOrderId, msg.sender, _productIds[i], _quantities[i]);
+
             nextOrderId++;
         }
 
@@ -129,6 +147,8 @@ contract ECommerceLoyalty {
 
         // Send MATIC to seller
         payable(msg.sender).transfer(maticAmount);
+
+        emit LRTExchangedForMATIC(msg.sender, lrtAmount, maticAmount);
     }
 
     // Function to exchange MATIC for LRT
@@ -141,20 +161,28 @@ contract ECommerceLoyalty {
 
         // Transfer LRT to the seller
         require(loyaltyToken.transfer(msg.sender, lrtAmount), "LRT transfer failed");
+
+        emit MATICExchangedForLRT(msg.sender, msg.value, lrtAmount);
     }
 
     // In case you want to update the LRT token address (for flexibility)
     function setLRTToken(address _lrtToken) external onlyAdmin {
         loyaltyToken = IERC20(_lrtToken);
+
+        emit LRTTokenAddressUpdated(msg.sender, _lrtToken);
     }
 
     // To withdraw accidentally sent tokens or MATIC from the contract
     function withdrawTokens(uint256 amount) external onlyAdmin {
         loyaltyToken.transfer(admin, amount);
+
+        emit TokensWithdrawn(msg.sender, amount);
     }
 
     function withdrawMATIC(uint256 amount) external onlyAdmin {
         payable(admin).transfer(amount);
+
+        emit MATICWithdrawn(msg.sender, amount);
     }
 
     // This function is executed on plain Ether transfers
