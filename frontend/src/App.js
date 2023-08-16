@@ -6,6 +6,7 @@ import Profile from './pages/Profile/Profile';
 import UploadProduct from './pages/UploadProduct/UploadProduct';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import Rules from './pages/Rules/Rules';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/profile" element={<Profile/>} />
           <Route path="/uploadproduct" element={<UploadProduct/>} />
           <Route path="/productdetails" element={<ProductDetails/> } />
+          <Route path="/rules" element={<Rules/> } />
         </Routes>
     </div>
   );

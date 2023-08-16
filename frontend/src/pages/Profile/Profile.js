@@ -3,6 +3,7 @@ import Navbar from "../../components/Navbar";
 import ProfileCard from "../../components/ProfieCard";
 import Card from "../../components/ProductCard";
 import { Link, useNavigate } from "react-router-dom";
+import Rewards from "./Rewards";
 
 function Profile() {
   const [visible, setVisible] = useState(0);
@@ -26,7 +27,7 @@ function Profile() {
             <h3
               onClick={() => setVisible(0)}
               className={`pl-4 pr-4 pt-3 pb-3 font-semibold border-[1px] border-slate-500 cursor-pointer ${
-                visible === 1 ? "" : "bg-blue-600 text-white"
+                visible === 0 ? "bg-blue-600 text-white" : ""
               }`}
             >
               My Orders
@@ -34,10 +35,18 @@ function Profile() {
             <h3
               onClick={() => setVisible(1)}
               className={`pl-4 pr-4 pt-3 pb-3 font-semibold border-[1px] border-slate-500 cursor-pointer ${
-                visible === 0 ? "" : "bg-blue-600 text-white"
+                visible === 1 ? "bg-blue-600 text-white" : ""
               }`}
             >
               My Products
+            </h3>
+            <h3
+              onClick={() => setVisible(2)}
+              className={`pl-4 pr-4 pt-3 pb-3 font-semibold border-[1px] border-slate-500 cursor-pointer ${
+                visible === 2 ? "bg-blue-600 text-white" : ""
+              }`}
+            >
+              Rewards
             </h3>
           </div>
         </section>
@@ -71,6 +80,9 @@ function Profile() {
             <Card />
             <Card />
           </section>
+        </div>
+        <div className={`md:mt-8 mt-5 ${visible === 2 ? "" : "hidden"}`}>
+          <Rewards/>
         </div>
       </div>
     </div>

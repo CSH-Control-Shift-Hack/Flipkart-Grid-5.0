@@ -1,7 +1,27 @@
-import React from "react";
+import React , {useState} from "react";
 import Navbar from "../../components/Navbar";
+import axios from 'axios'
 
 function UploadProduct() {
+
+  const [file1,setFile1] = useState();
+
+  const handle = async() => {
+    const res = await axios({
+      method: "post",
+      url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      data: file1,
+      headers:{
+        pinata_api_key: '387124cacf45844a6a47',
+        pinata_secret_api_key: '92eca9357b0104480c8a2b55f29afa3837f28e196c113f0e047650cea9bc4554',
+        "Content-Type":"multipart/form-data"
+      }
+    })
+
+    console.log(res)
+  }
+
+
   return (
     <div>
       <Navbar />
@@ -9,7 +29,7 @@ function UploadProduct() {
         <h2 className="font-semibold sm:text-2xl xs:text-xl text-lg">
           Add A Product
         </h2>
-        <form className="mt-3">
+        <div className="mt-3">
           <h4 className="font-semibold mb-1 mt-5">Product Name* </h4>
           <div className="border-[1px] border-slate-600 p-3">
             <input
@@ -22,6 +42,11 @@ function UploadProduct() {
           <div className="border-[1px] border-slate-600 p-3">
             <input
               type="file"
+              onChange={(e)=>{
+                if(e.target.files){
+                    setFile1(e.target.files[0]);
+                }
+              }}
               className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
               placeholder="EUpload an image for your product *"
             />
@@ -42,13 +67,13 @@ function UploadProduct() {
               placeholder="Enter a short description for your product *"
             />
           </div>
-          <button
+          <h3 onClick={handle}
             type="submit"
             className="pt-3 pb-3 cursor-pointer mt-7 mb-5 w-[100px] text-center text-slate-100 rounded bg-[#3857df]"
           >
             Create
-          </button>
-        </form>
+          </h3>
+        </div>
       </div>
     </div>
   );
