@@ -1,6 +1,7 @@
 import React, { useContext, createContext } from "react";
 import { ethers } from "ethers";
-import projectFactory from "../artifacts/contracts/Loyalty.sol/ECommerceLoyalty.json";
+import eCommerceLoyalty from "../artifacts/contracts/Loyalty.sol/ECommerceLoyalty.json";
+import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json";
 
 // 0x44eb92EA9164B24B2eeE88Ef8F697076668D9096
 
@@ -13,12 +14,12 @@ export const StateContextProvider = ({ children }) => {
 
   const contract = new ethers.Contract(
     "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096", // needs to be changed every time
-    projectFactory.abi,
+    eCommerceLoyalty.abi,
     signer
   );
 
   const registerSeller = async () => {
-    
+
     const projectData = await contract.registerSeller();
   };
 
@@ -56,6 +57,32 @@ export const StateContextProvider = ({ children }) => {
 
     const projectData = await contract.withdrawMATIC(_amount);
   };
+
+
+
+  const loyaltyTokenContract = new ethers.Contract(
+    "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096", // needs to be changed every time
+    loyaltyToken.abi,
+    signer
+  );
+
+  const checkDecay = async(address) => {
+    await loyaltyTokenContract.checkDecay(address);
+  }
+
+  const issueTokens = async(_to, _amount) => {
+    await loyaltyTokenContract.issueTokens(_to, _amount);
+  }
+
+  const issueTokensBySeller = async(_to, _amount) => {
+
+    // First check if the sender is a seller
+
+    // Then call the loyalTokenContract.issueTokensBySeller function
+    await loyalTokenContract.issueTokensBySeller(_to, _amount);
+
+  }
+
 
 
   return (
