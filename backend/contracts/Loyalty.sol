@@ -11,6 +11,7 @@ contract ECommerceLoyalty {
     struct User {
         address userAddress;
         uint256 loyaltyPoints;
+        uint256 points;
         uint256[] orderIds;
     }
 
@@ -58,6 +59,7 @@ contract ECommerceLoyalty {
     event SellerRegistered(address indexed sellerAddress);
     event ProductAdded(uint256 indexed productId, address indexed sellerAddress, string name, uint256 price);
     event ProductPurchased(uint256 indexed orderId, address indexed buyerAddress, uint256 indexed productId, uint256 quantity);
+    event PointsEarned(address indexed buyerAddress, uint256 pointsEarned);
     event LRTExchangedForMATIC(address indexed sellerAddress, uint256 lrtAmount, uint256 maticAmount);
     event MATICExchangedForLRT(address indexed sellerAddress, uint256 maticAmount, uint256 lrtAmount);
     event LRTTokenAddressUpdated(address indexed admin, address newLRTTokenAddress);
@@ -98,7 +100,7 @@ contract ECommerceLoyalty {
         nextProductId++;
     }
 
-    function purchaseProducts(uint256[] memory _productIds, uint256[] memory _quantities, bool[] memory _fullPaymentInMatic, uint256 totalCost, uint256 totalRewardPoints, uint256 totalLoyaltyTokensUsed) external payable {
+    function purchaseProducts(uint256[] memory _productIds, uint256[] memory _quantities, bool[] memory _fullPaymentInMatic, uint256 totalCost, uint256 totalLoyaltyTokensUsed) external payable {
         
         require(_productIds.length == _quantities.length, "Mismatch in product IDs and quantities length");
 
@@ -106,7 +108,6 @@ contract ECommerceLoyalty {
         uint256 payableInMatic = totalCost - totalLoyaltyTokensUsed; // Remaining amount to be paid in MATIC
 
         require(msg.value >= payableInMatic, "Incorrect MATIC sent");
-        require(loyaltyToken.transferFrom(msg.sender, address(loyaltyToken), totalLoyaltyTokensUsed), "Loyalty Token transfer failed");
 
         // Transfer commission to the contract
         payable(address(this)).transfer(commission);
@@ -116,11 +117,24 @@ contract ECommerceLoyalty {
             Product memory product = products[_productIds[i]];
             uint256 productCost = product.price * _quantities[i];
 
+            // Calculate 10% of the selling price of the product
+            uint256 pointsEarned = productCost / 10;
+
+            // Add the points to the user's account
+            users[msg.sender].points = users[msg.sender].points.add(pointsEarned);
+
+            emit PointsEarned(msg.sender, pointsEarned);
+
             if(_fullPaymentInMatic[i]) {
-                payable(product.sellerAddress).transfer(productCost - (productCost * COMMISSION) / 100); // Deducting commission for each product
+                payable(product.sellerAddress).transfer(productCost - (productCost * COMMISSION) / 100); // Deducting commission for each seller
+
+                // For this, the seller must approve this smart contract while uploading a product to spend rewardPoints on his behalf.
+                require(loyaltyToken.transferFrom(product.sellerAddress, msg.sender, product.rewardPoints * _quantities[i]), "Reward Points transfer failed");
             } else {
-                payable(product.sellerAddress).transfer(productCost - product.loyaltyTokensAccepted - (productCost * COMMISSION) / 100); // Deducting commission for each product
-                loyaltyToken.transfer(product.sellerAddress, product.loyaltyTokensAccepted);
+                payable(product.sellerAddress).transfer(productCost - product.loyaltyTokensAccepted * _quantities[i] - (productCost * COMMISSION) / 100); // Deducting commission for each product
+
+                // For this, the buyer must approve this smart contract while placing order to spend loyaltyTokens on his behalf.
+                require(loyaltyToken.transferFrom(msg.sender, product.sellerAddress, product.loyaltyTokensAccepted * _quantities[i]), "Loyalty Token transfer failed");
             }
 
             // Record the order
@@ -132,8 +146,6 @@ contract ECommerceLoyalty {
             nextOrderId++;
         }
 
-        // Issue total loyalty points to the buyer
-        loyaltyToken.transfer(msg.sender, totalRewardPoints);
     }
 
     function getAllProducts() public view returns (Product[] memory) {
@@ -154,7 +166,7 @@ contract ECommerceLoyalty {
         uint256 maticAmount = lrtAmount.mul(RATE);
 
         // Transfer LRT from seller to this contract
-        require(loyaltyToken.transferFrom(msg.sender, address(loyaltyToken), lrtAmount), "LRT transfer failed");
+        require(loyaltyToken.transferFrom(msg.sender, address(this), lrtAmount), "LRT transfer failed");
 
         // Send MATIC to seller
         payable(msg.sender).transfer(maticAmount);
@@ -168,7 +180,7 @@ contract ECommerceLoyalty {
         uint256 lrtAmount = msg.value.div(RATE);
 
         // Ensure the contract has enough LRT
-        require(loyaltyToken.balanceOf(address(loyaltyToken)) >= lrtAmount, "Not enough LRT in contract");
+        require(loyaltyToken.balanceOf(address(this)) >= lrtAmount, "Not enough LRT in contract");
 
         // Transfer LRT to the seller
         require(loyaltyToken.transfer(msg.sender, lrtAmount), "LRT transfer failed");
