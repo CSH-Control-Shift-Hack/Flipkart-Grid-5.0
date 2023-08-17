@@ -136,6 +136,16 @@ contract ECommerceLoyalty {
         loyaltyToken.transfer(msg.sender, totalRewardPoints);
     }
 
+    function getAllProducts() public view returns (Product[] memory) {
+        Product[] memory productList = new Product[](nextProductId - 1);
+
+        for (uint256 i = 1; i < nextProductId; i++) {
+            productList[i - 1] = products[i];
+        }
+
+        return productList;
+    }
+
     // ... Additional functions for other functionalities ...
 
     // Function to exchange LRT for MATIC
