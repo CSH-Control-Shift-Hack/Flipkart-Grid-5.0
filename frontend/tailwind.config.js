@@ -13,7 +13,8 @@ module.exports = {
         wq: "450px",
         we: "350px",
         wr: "600px",
-        wt: "550px"
+        wt: "550px",
+        xs: '500px'
       },
     },
   },

@@ -1,73 +1,129 @@
 import React, { useContext, createContext } from "react";
 import { ethers } from "ethers";
-import projectFactory from "../artifacts/contracts/CrowdFunding.sol/CrowdFunding.json";
+import projectFactory from "../artifacts/contracts/Loyalty.sol/ECommerceLoyalty.json";
 
-// 0x621c945d1De2424dF87788DCC67E59d9dE6cF7c4
+// 0x44eb92EA9164B24B2eeE88Ef8F697076668D9096
 
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
 
-  const hello = async () => {
-      console.log("Hello")
-  };
-
-  const getProjects = async () => {
+  const registerSeller = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
 
     const contract = new ethers.Contract(
-      "0x621c945d1De2424dF87788DCC67E59d9dE6cF7c4",
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
       projectFactory.abi,
       signer
     );
 
-    const projectData = await contract.getProjects();
+    const projectData = await contract.registerSeller();
+  };
 
-    const AllProjects = projectData.map((project, i) => ({
-      owner: project.owner,
-      title: project.stringArray[3],
-      description: project.stringArray[4],
-      target: ethers.utils.formatEther(project.intArray[0].toString()),
-      deadline: project.intArray[1].toNumber(),
-      amountRaised: ethers.utils.formatEther(project.intArray[2].toString()),
-      image: project.stringArray[5],
-      visible: project.intArray[3],
-      video: project.stringArray[1],
-      tagline: project.stringArray[2],
-      owner_name: project.stringArray[0],
-      country: project.stringArray[6],
-      hq_address: project.stringArray[7],
-      plan: project.stringArray[8],
-      twitter: project.stringArray[9],
-      email: project.stringArray[10],
-      instagram: project.stringArray[11],
-      linkedIn: project.stringArray[12],
-      category: project.category,
-      prev_Amount_raised: ethers.utils.formatEther(project.intArray[4].toString()),
-      valuation : ethers.utils.formatEther(project.intArray[5].toString()),
-      min_invest: ethers.utils.formatEther(project.intArray[6].toString()),
-      hi:project.intArray[6],
-      donators: project.donators,
-      donators_name: project.donators_name,
-      doc:project.stringArray[13],
-      updates:project.updates,
-      pId: i,
-    }));
+  const addProduct = async (_name, _quantity, _price, _rewardPoints, _loyaltyTokensAccepted, _imageUrl) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
 
-
-    const needProjects = AllProjects.filter(
-      (project) => project.visible?._hex === "0x00"
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
     );
 
-    return needProjects;
+    const projectData = await contract.addProduct(_name, _quantity, _price, _rewardPoints, _loyaltyTokensAccepted, _imageUrl);
   };
+
+  const purchaseProduct = async (_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalRewardPoints, _totalLoyaltyTokenUsed) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
+    );
+
+    const projectData = await contract.purchaseProduct(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalRewardPoints, _totalLoyaltyTokenUsed);
+  };
+
+  const exchangeLRTForMATIC = async (_amount) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
+    );
+
+    const projectData = await contract.exchangeLRTForMATIC(_amount);
+  };
+
+  const exchangeMATICForLRT = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
+    );
+
+    const projectData = await contract.exchangeMATICForLRT();
+  };
+
+  const setLRTToken = async (address) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
+    );
+
+    const projectData = await contract.setLRTToken(address);
+  };
+
+  const withdrawTokens = async (_amount) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
+    );
+
+    const projectData = await contract.withdrawTokens(_amount);
+  };
+
+  const withdrawMATIC = async (_amount) => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      "0x44eb92EA9164B24B2eeE88Ef8F697076668D9096",
+      projectFactory.abi,
+      signer
+    );
+
+    const projectData = await contract.withdrawMATIC(_amount);
+  };
+
 
   return (
     <StateContext.Provider
       value={{
-        hello,
-        getProjects
+        registerSeller,
+        addProduct,
+        purchaseProduct,
+        exchangeLRTForMATIC,
+        exchangeMATICForLRT,
+        setLRTToken,
+        withdrawTokens,
+        withdrawMATIC
       }}
     >
       {children}

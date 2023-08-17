@@ -2,12 +2,12 @@ const hre = require('hardhat');
 
 async function main() {
 
-    const CrowdFunding = await hre.ethers.getContractFactory("CrowdFunding")
-    const crowdFunding = await CrowdFunding.deploy();
+    const Loyalty = await hre.ethers.getContractFactory("Loyalty")
+    const loyalty = await Loyalty.deploy();
 
-    await crowdFunding.deployed();
+    await loyalty.deployed();
 
-    console.log("Factory deployed to:", crowdFunding.address);
+    console.log("Factory deployed to:", loyalty.address);
 }   
 
 main()

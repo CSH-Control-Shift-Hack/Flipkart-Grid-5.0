@@ -1,11 +1,22 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
-import { AiFillCaretLeft } from "react-icons/ai"
-import { AiFillCaretRight } from "react-icons/ai"
+import { AiFillCaretLeft } from "react-icons/ai";
+import { AiFillCaretRight } from "react-icons/ai";
+import { useStateContext } from "../../context";
 
 function ProductDetails() {
-
   const [count, setCount] = useState(1);
+
+  const { purchaseProduct } = useStateContext();
+
+  const purchase = async () => {
+    try {
+      const data = await purchaseProduct([0],[1],[true],1,2,0);
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <div>
@@ -45,11 +56,21 @@ function ProductDetails() {
             </div>
             <div className=" mt-8">
               <section className="flex gap-[10px]">
-                <AiFillCaretLeft onClick={()=>{setCount(count-1)}} className="h-10 cursor-pointer w-10"/>
+                <AiFillCaretLeft
+                  onClick={() => {
+                    setCount(count - 1);
+                  }}
+                  className="h-10 cursor-pointer w-10"
+                />
                 <div className="flex flex-col justify-center">
-                <h5 className="font-semibold text-xl">{count}</h5>
+                  <h5 className="font-semibold text-xl">{count}</h5>
                 </div>
-                <AiFillCaretRight onClick={()=>{setCount(count+1)}} className="h-10 cursor-pointer w-10"/>
+                <AiFillCaretRight
+                  onClick={() => {
+                    setCount(count + 1);
+                  }}
+                  className="h-10 cursor-pointer w-10"
+                />
               </section>
               <div className="grid grid-cols-2 gap-[12px] mt-6">
                 <h3 className="pt-3 pb-3 text-center bg-blue-600 text-slate-100 rounded">
