@@ -3,8 +3,9 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; // Interface for ERC20 token
 import "@openzeppelin/contracts/utils/math/SafeMath.sol"; // SafeMath
+import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 
-contract ECommerceLoyalty {
+contract ECommerceLoyalty is AutomationCompatibleInterface {
     using SafeMath for uint256;
 
     // Structs
@@ -47,6 +48,11 @@ contract ECommerceLoyalty {
     uint256 public constant RATE = 1e18; // 1 LRT = 1 MATIC (taking into account 18 decimals)
     uint256 public constant COMMISSION = 5; // 5% commission for Flipkart.
 
+    uint256 public immutable interval; // time after which the leaderboard needs to be reset.
+    uint256 public lastTimestamp; // the last timestamp at which the leaderboard was reset.
+
+    address[] public leaderboard; // this array to be updated by sorting the users by their points.
+
     mapping(address => User) public users;
     mapping(address => Seller) public sellers;
     mapping(uint256 => Product) public products;
@@ -57,6 +63,7 @@ contract ECommerceLoyalty {
 
     // Events
     event SellerRegistered(address indexed sellerAddress);
+    event UserRegistered(address indexed userAddress);
     event ProductAdded(uint256 indexed productId, address indexed sellerAddress, string name, uint256 price);
     event ProductPurchased(uint256 indexed orderId, address indexed buyerAddress, uint256 indexed productId, uint256 quantity);
     event PointsEarned(address indexed buyerAddress, uint256 pointsEarned);
@@ -78,9 +85,11 @@ contract ECommerceLoyalty {
     }
 
     // Constructor
-    constructor(address _loyaltyTokenAddress) {
+    constructor(address _loyaltyTokenAddress, uint256 _interval) {
         admin = msg.sender;
         loyaltyToken = IERC20(_loyaltyTokenAddress);
+        interval = _interval;
+        lastTimestamp = block.timestamp;
     }
 
     // Functions
@@ -89,6 +98,14 @@ contract ECommerceLoyalty {
         sellers[msg.sender] = Seller(msg.sender, new uint256[](0));
 
         emit SellerRegistered(msg.sender);
+    }
+
+    function registerUser() external {
+        require(users[msg.sender].userAddress == address(0), "User already registered");
+
+        users[msg.sender] = User(msg.sender, 0, 0, new uint256[](0));
+
+        emit UserRegistered(msg.sender);
     }
 
     function addProduct(string memory name, string memory _description, uint256 _quantity, uint256 _price, uint256 _rewardPoints, uint256 loyaltyTokensAccepted, string memory _imageURI) external onlySeller {
@@ -156,6 +173,58 @@ contract ECommerceLoyalty {
         }
 
         return productList;
+    }
+
+    // Functions for Chainlink Automation oracles
+    function checkUpkeep(bytes memory /* checkData */) public view returns (bool upkeepNeeded, bytes memory performData) {
+        
+        bool timePassed = ((block.timestamp - lastTimestamp) > interval);
+
+        address[] memory leaders = new address[](100); // initialising empty array.
+        uint256[] memory leaderPoints = new uint256[](100); // stores the points of the leaders.
+
+        // Constructing the arrays leaders and leaderPoints.
+        uint256 minIdx = (nextOrderId-100 > 0) ? nextOrderId-100 : 0;
+        for (uint256 i = minIdx; i < nextOrderId; i++) {
+            leaders[i - 1] = orders[i].buyerAddress;
+            leaderPoints[i - 1] = users[orders[i].buyerAddress].points;
+        }
+
+        // Bubble sort for sorting the leaders array based on leaderPoints.
+        for (uint256 i = 0; i < leaderPoints.length; i++) {
+            for (uint256 j = 0; j < leaderPoints.length - 1; j++) {
+                if (leaderPoints[j] < leaderPoints[j + 1]) {
+                    uint256 temp = leaderPoints[j];
+                    leaderPoints[j] = leaderPoints[j + 1];
+                    leaderPoints[j + 1] = temp;
+
+                    address tempAddr = leaders[j];
+                    leaders[j] = leaders[j + 1];
+                    leaders[j + 1] = tempAddr;
+                }
+            }
+        }
+
+        upkeepNeeded = timePassed;
+        performData = abi.encode(leaders);
+
+        return (upkeepNeeded, performData);
+    }
+
+    function performUpkeep(bytes calldata performData) external {
+        (bool upkeepNeeded, ) = checkUpkeep("");
+        if (!upkeepNeeded) {
+            revert("Upkeep not needed");
+        }
+
+        // decode performData
+        address[] memory leaders = abi.decode(performData, (address[]));
+
+        // assign decoded data to the leaderboard.
+        leaderboard = leaders;
+
+        // reset the lastTimestamp
+        lastTimestamp = block.timestamp;
     }
 
     // ... Additional functions for other functionalities ...
