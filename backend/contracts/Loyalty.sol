@@ -22,6 +22,7 @@ contract ECommerceLoyalty {
     struct Product {
         uint256 productId;
         string name;
+        string description;
         uint256 quantity;
         address sellerAddress;
         uint256 price;
@@ -88,8 +89,8 @@ contract ECommerceLoyalty {
         emit SellerRegistered(msg.sender);
     }
 
-    function addProduct(string memory name, uint256 _quantity, uint256 _price, uint256 _rewardPoints, uint256 loyaltyTokensAccepted, string memory _imageURI) external onlySeller {
-        products[nextProductId] = Product(nextProductId, name, _quantity, msg.sender, _price, _rewardPoints, loyaltyTokensAccepted, _imageURI);
+    function addProduct(string memory name, string memory _description, uint256 _quantity, uint256 _price, uint256 _rewardPoints, uint256 loyaltyTokensAccepted, string memory _imageURI) external onlySeller {
+        products[nextProductId] = Product(nextProductId, name, _description, _quantity, msg.sender, _price, _rewardPoints, loyaltyTokensAccepted, _imageURI);
         sellers[msg.sender].productIds.push(nextProductId);
 
         emit ProductAdded(nextProductId, msg.sender, name, _price);

@@ -1,9 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
-const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-
 const PRIVATE_KEY2 = process.env.PRIVATE_KEY2;
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -14,14 +11,9 @@ module.exports = {
     hardhat: {},
     localhost:{
       url: "http://localhost:7545",
-      chainId: 1337,
+      chainId: 31337,
       gas: 2100000,
       gasPrice: 8000000000,
-    },
-    goerli: {
-      url: GOERLI_RPC_URL,
-      accounts: [PRIVATE_KEY],
-      chainId: 5,
     },
     polygon: {
       url: 'https://rpc-mumbai.maticvigil.com/',
