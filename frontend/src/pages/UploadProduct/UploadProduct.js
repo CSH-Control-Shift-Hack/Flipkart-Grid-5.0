@@ -2,6 +2,7 @@ import React , {useState , useRef} from "react";
 import Navbar from "../../components/Navbar";
 import axios from 'axios'
 import { useStateContext } from "../../context";
+import { ethers } from "ethers";
 
 function UploadProduct() {
 
@@ -12,11 +13,21 @@ function UploadProduct() {
   const loyaltyTokens = useRef()
   const desc = useRef()
 
-  const { addProduct } = useStateContext();
+  const { addProduct, loyaltyTokenContract } = useStateContext();
 
     const addAProduct = async () => {
+
+      let _price = ethers.utils.parseEther(price.current.value)
+      let _rewardPoints = ethers.utils.parseEther(rewardPoints.current.value)
+      let _loyaltyTokens = ethers.utils.parseEther(loyaltyTokens.current.value)
+
+      let approvalTokens = _rewardPoints * quantity.current.value
+
     try {
-        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, price.current.value, rewardPoints.current.value, loyaltyTokens.current.value, 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
+        const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, approvalTokens.toString())
+        const transactionReceipt = await transaction.wait();
+        
+        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, _price.toString(), _rewardPoints.toString(), _loyaltyTokens.toString(), 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
         console.log(data)
     } catch (e) {
       console.log(e);
