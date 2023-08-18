@@ -23,16 +23,35 @@ function ProductDetails() {
     }
   };
 
+  console.log(myProduct)
+
   const addToCart = () => {
     let data = []
     data = JSON.parse(localStorage.getItem("flipkart"));
-    localStorage.removeItem("flipkart");
     if (data) {
-      data.push(myProduct);
-      localStorage.setItem("flipkart", JSON.stringify(data));
+      let flag = [];
+      flag = data.filter((item)=>
+        item.product.productId === myProduct.productId
+      )
+      if(flag.length === 0){
+        data.push({product:myProduct, quantity:count});
+        localStorage.setItem("flipkart", JSON.stringify(data));
+        console.log("HA")
+      }else{
+        let i;
+        console.log("NA")
+        for(i=0;i<data.length;i++){
+          if(data[i].product.productId === myProduct.productId){
+            data[i].quantity = data[i].quantity + count;
+          }
+        }
+        localStorage.setItem("flipkart", JSON.stringify(data));
+      }
+
+      
     }
     else{
-      localStorage.setItem("flipkart", JSON.stringify([myProduct]));
+      localStorage.setItem("flipkart", JSON.stringify([{product:myProduct, quantity:count}]));
       console.log("hi")
     }
     console.log(data);

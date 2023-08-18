@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 
+import { useStateContext } from '../context/index';
+
 function Navbar() {
   const nav = useNavigate();
+  const { connectToMetaMask, isConnected, currentAccount } = useStateContext();
 
   const CartNav = () => {
     nav("/cart");
@@ -47,10 +50,16 @@ function Navbar() {
           />
         </div>
         <div className="flex flex-col justify-center mr-3">
-          <CgProfile
-            onClick={ProfileNav}
-            className="h-8 w-8 text-white ml-3 mr-3 cursor-pointer"
-          />
+        {
+          !isConnected ? (
+            <button onClick={connectToMetaMask}>Connect to MetaMask</button>
+          ) : (
+            <CgProfile
+              onClick={ProfileNav}
+              className="h-8 w-8 text-white ml-3 mr-3 cursor-pointer"
+            />
+          )
+        }
         </div>
       </section>
     </div>

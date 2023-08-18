@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar";
 import { useStateContext } from "../../context";
 
 function Home() {
-  const { getAllProducts } = useStateContext();
+  const { getAllProducts , contract } = useStateContext();
   const [products, setProducts] = useState([])
 
     const getProducts = async () => {
@@ -17,12 +17,15 @@ function Home() {
     }
   };
 
+
   console.log(products)
 
 
   useEffect(() => {
+    if(contract){
     getProducts()
-  }, [])
+    }
+  }, [contract])
   
 
 
@@ -35,9 +38,9 @@ function Home() {
           Top Products
         </h1>
         <section className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-x-[12px] gap-y-[18px] md:mt-8 mt-5">
-          {products?.map((item)=>{
+          {products?.map((item, i)=>{
             return(
-            <ProductCard item={item}/>
+            <ProductCard key = {i} item={item}/>
             )
           })}
         </section>
