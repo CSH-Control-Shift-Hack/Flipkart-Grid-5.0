@@ -3,6 +3,7 @@ import Navbar from "../../components/Navbar";
 import CartCard from "../../components/CartCard";
 
 function Cart() {
+  
   return (
     <div className="bg-slate-100">
       <Navbar />

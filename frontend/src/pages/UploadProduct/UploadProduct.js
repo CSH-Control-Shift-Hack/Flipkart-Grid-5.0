@@ -1,32 +1,22 @@
-import React , {useState} from "react";
+import React , {useState , useRef} from "react";
 import Navbar from "../../components/Navbar";
 import axios from 'axios'
 import { useStateContext } from "../../context";
 
 function UploadProduct() {
 
-  // const [file1,setFile1] = useState();
-
-  // const handle = async() => {
-  //   const res = await axios({
-  //     method: "post",
-  //     url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
-  //     data: file1,
-  //     headers:{
-  //       pinata_api_key: '387124cacf45844a6a47',
-  //       pinata_secret_api_key: '92eca9357b0104480c8a2b55f29afa3837f28e196c113f0e047650cea9bc4554',
-  //       "Content-Type":"multipart/form-data"
-  //     }
-  //   })
-
-  //   console.log(res)
-  // }
+  const name = useRef();
+  const quantity = useRef()
+  const price = useRef()
+  const rewardPoints = useRef()
+  const loyaltyTokens = useRef()
+  const desc = useRef()
 
   const { addProduct } = useStateContext();
 
     const addAProduct = async () => {
     try {
-        const data = await addProduct('MAt', 10, 20, 3, 3, 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
+        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, price.current.value, rewardPoints.current.value, loyaltyTokens.current.value, 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
         console.log(data)
     } catch (e) {
       console.log(e);
@@ -45,6 +35,7 @@ function UploadProduct() {
           <div className="border-[1px] border-slate-600 p-3">
             <input
               type="text"
+              ref={name}
               className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
               placeholder="Enter a name for your product *"
             />
@@ -66,14 +57,43 @@ function UploadProduct() {
           <div className="border-[1px] border-slate-600 p-3">
             <input
               type="number"
+              ref={price}
               className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
               placeholder="Enter a price for your product *"
             />
           </div>
-          <h4 className="font-semibold mb-1 mt-5">Product Price* </h4>
+          <h4 className="font-semibold mb-1 mt-5">Product Quantity* </h4>
+          <div className="border-[1px] border-slate-600 p-3">
+            <input
+              type="number"
+              ref={quantity}
+              className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
+              placeholder="Enter no. of items to be sold *"
+            />
+          </div>
+          <h4 className="font-semibold mb-1 mt-5">Reward Points* </h4>
+          <div className="border-[1px] border-slate-600 p-3">
+            <input
+              type="number"
+              ref={rewardPoints}
+              className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
+              placeholder="Enter reward points you are offering *"
+            />
+          </div>
+          <h4 className="font-semibold mb-1 mt-5">Loyalty Tokens Accepted* </h4>
+          <div className="border-[1px] border-slate-600 p-3">
+            <input
+              type="number"
+              ref={loyaltyTokens}
+              className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
+              placeholder="Enter loyalty tokens you can accept *"
+            />
+          </div>
+          <h4 className="font-semibold mb-1 mt-5">Product Description* </h4>
           <div className="border-[1px] border-slate-600 p-3">
             <textarea
             rows={4}
+              ref={desc}
               className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
               placeholder="Enter a short description for your product *"
             />

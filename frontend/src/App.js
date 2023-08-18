@@ -7,6 +7,7 @@ import UploadProduct from './pages/UploadProduct/UploadProduct';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Rules from './pages/Rules/Rules';
+import LeaderBoard from './pages/LeaderBoard/LeaderBoard';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/uploadproduct" element={<UploadProduct/>} />
           <Route path="/productdetails" element={<ProductDetails/> } />
           <Route path="/rules" element={<Rules/> } />
+          <Route path="/leaderboard" element={<LeaderBoard/> } />
         </Routes>
     </div>
   );

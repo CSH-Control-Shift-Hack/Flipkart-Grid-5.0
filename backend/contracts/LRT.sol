@@ -23,8 +23,7 @@ contract LoyaltyRewardToken is ERC20, Ownable {
     mapping(address => uint256) public lastIssuedMonth;
 
     constructor() ERC20("Loyalty Reward Token", "LRT") {
-        _mint(msg.sender, INITIAL_SUPPLY.sub(TREASURY_FUND)); // Mint initial supply minus treasury to deployer
-        _mint(address(this), TREASURY_FUND); // Mint treasury fund to the contract itself
+        _mint(msg.sender, INITIAL_SUPPLY); // Mint initial supply minus treasury to deployer
     }
 
     function decay(address user) public {

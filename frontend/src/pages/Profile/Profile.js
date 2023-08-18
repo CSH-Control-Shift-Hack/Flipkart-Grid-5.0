@@ -4,15 +4,27 @@ import ProfileCard from "../../components/ProfieCard";
 import Card from "../../components/ProductCard";
 import { Link, useNavigate } from "react-router-dom";
 import Rewards from "./Rewards";
+import { useStateContext } from "../../context";
 
 function Profile() {
   const [visible, setVisible] = useState(0);
 
   const nav = useNavigate()
- 
+  
   const uploadNav = () => {
     nav("/uploadproduct")
   }
+
+  const { registerSeller } = useStateContext();
+
+  const addSeller = async () => {
+    try {
+        const data = await registerSeller();
+        console.log(data)
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <div>
@@ -71,6 +83,9 @@ function Profile() {
             </div>
             <h3 onClick={uploadNav} className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500">
               Add New Product
+            </h3>
+            <h3 onClick={registerSeller} className="text-center hidden font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500">
+              Register As Seller
             </h3>
           </div>
           <section className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-x-[12px] gap-y-[18px] md:mt-8 mt-5">

@@ -3,11 +3,18 @@ import Navbar from "../../components/Navbar";
 import { AiFillCaretLeft } from "react-icons/ai";
 import { AiFillCaretRight } from "react-icons/ai";
 import { useStateContext } from "../../context";
+import { useSelector, useDispatch } from 'react-redux';
 
 function ProductDetails() {
   const [count, setCount] = useState(1);
 
   const { purchaseProduct } = useStateContext();
+
+  const myProduct=useSelector((state)=> 
+    state.changeCurrProduct
+  );
+
+  console.log(myProduct)
 
   const purchase = async () => {
     try {
@@ -26,32 +33,19 @@ function ProductDetails() {
           <div className="lg:min-h-[450px] lg:w-1/2 w-full">
             <img
               src={
-                "https://cdn.pixabay.com/photo/2023/05/15/08/52/flower-7994489_1280.jpg"
+                myProduct?.imageURI
               }
               className="h-full w-full rounded lg:max-h-[1000px] md:max-h-[400px] sm:max-h-[320px] max-h-[250px]"
             />
           </div>
           <section className="lg:w-1/2 w-full lg:pt-0 pt-5 flex flex-col justify-between">
             <div className="">
-              <h2 className="text-4xl font-semibold">Koi Toh Product Hai</h2>
+              <h2 className="text-4xl font-semibold">{myProduct?.name}</h2>
               <h4 className="text-slate-600 mt-3">
-                This Joy sunscreen is formulated with natural sunscreen agents
-                like Papaya and Saffron which provide effective protection from
-                UVA and UVB rays. It prevents skin tanning due to the damaging
-                effects of sun rays. The sunscreen offers oil free
-                moisturisation with long lasting fairness and sweat-free feel.
-                Containing Vitamin A and Papain enzyme, papaya helps remove dead
-                skin cells and inactive proteins, thus rejuvenating your skin
-                and help the skin repair itself. It also helps keep your skin
-                hydrated and gradually reduces the appearance of dark patches,
-                thus lightening your skin. Saffron contains essential vitamins
-                and antioxidants that are beneficial to the skin. It is
-                anti-inflammatory and soothes skin. It is a dermatologically
-                tested product. Discontinue use if skin irritation or rashes
-                occur.
+                {myProduct?.description}
               </h4>
               <h3 className="font-semibold text-2xl mt-2">
-                20 MATIC (4 FLIPS can be used)
+                {myProduct?.price} MATIC ({myProduct?.loyaltyTokensAccepted} FLIPS can be used)
               </h3>
             </div>
             <div className=" mt-8">
@@ -73,10 +67,10 @@ function ProductDetails() {
                 />
               </section>
               <div className="grid grid-cols-2 gap-[12px] mt-6">
-                <h3 className="pt-3 pb-3 text-center bg-blue-600 text-slate-100 rounded">
+                <h3 className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded">
                   Add To Cart
                 </h3>
-                <h3 className="pt-3 pb-3 text-center bg-blue-600 text-slate-100 rounded">
+                <h3 onClick={purchase} className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded">
                   Buy Now
                 </h3>
               </div>
