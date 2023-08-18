@@ -17,17 +17,18 @@ function UploadProduct() {
 
     const addAProduct = async () => {
 
-      let _price = ethers.utils.parseEther(price.current.value)
-      let _rewardPoints = ethers.utils.parseEther(rewardPoints.current.value)
-      let _loyaltyTokens = ethers.utils.parseEther(loyaltyTokens.current.value)
+      let _price = price.current.value
+      let _rewardPoints = rewardPoints.current.value
+      let _loyaltyTokens = loyaltyTokens.current.value
 
       let approvalTokens = _rewardPoints * quantity.current.value
+      let _appTokens = ethers.utils.parseEther(approvalTokens.toString())
 
     try {
-        const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, approvalTokens.toString())
+        const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, _appTokens)
         const transactionReceipt = await transaction.wait();
         
-        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, _price.toString(), _rewardPoints.toString(), _loyaltyTokens.toString(), 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
+        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, _price, ethers.utils.parseEther(_rewardPoints), ethers.utils.parseEther(_loyaltyTokens), 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
         console.log(data)
     } catch (e) {
       console.log(e);

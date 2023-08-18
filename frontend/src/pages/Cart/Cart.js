@@ -1,51 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import CartCard from "../../components/CartCard";
 import { useStateContext } from '../../context/index';
+import { ethers } from "ethers";
 
 function Cart() {
 
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem("flipkart")));
-
-  console.log(items)
-
-  const [totalPrice, setTotalPrice] = useState(120);
-  const [payableInFlips, setPayableInFlips] = useState(12);
-  const [loading, setLoading] = useState(false);
-
-  const [productIds, setProductIds] = useState([]);
-  const [quantities, setQuantities] = useState([]);
-  const [fullPaymentInMatic, setFullPaymentInMatic] = useState([]);
-
   const { contract, purchaseProducts } = useStateContext();
 
-  const purchase = async (e, productIds, quantities, fullPaymentInMatic) => {
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem("flipkart")));
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [payableInFlips, setPayableInFlips] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-    // Calculate totalCost, totalLoyaltyTokenUsed
+  const [productIds, setProductIds] = useState([])
+  const [quantities, setQuantities] = useState([])
+  const [fullPaymentInMatic, setFullPaymentInMatic] = useState([])
+
+  useEffect(() => {
 
     let totalCost = 0, totalLoyaltyTokensUsed = 0;
 
-    for (let i = 0; i < fullPaymentInMatic.length; i++) {
-      // Add the product price to totalCost if the product is fully paid in Matic
-      let productPrice = await contract.products[productIds[i]].price;
-      let loyaltyTokensAccepted = await contract.products[productIds[i]].loyaltyTokensAccepted;
+    for(let i = 0; i < items.length; i++) {
+      let currProduct = items[i].product;
+      let currQuantity = items[i].quantity;
+      let currFullPaymentInMatic = items[i].fullPaymentInMatic
 
-      if (fullPaymentInMatic[i]) {
-        totalCost += productPrice * quantities[i];
+      productIds.push(currProduct.productId)
+      quantities.push(currQuantity)
+      fullPaymentInMatic.push(currFullPaymentInMatic)
+
+       if (currFullPaymentInMatic) {
+        totalCost += ethers.utils.parseEther(currProduct.price) * currQuantity;
       } else {
         // If the product is not fully paid in Matic, 
         // add the remaining cost after using loyalty tokens to totalCost
-        totalCost += (productPrice - loyaltyTokensAccepted) * quantities[i];
+        totalCost += (ethers.utils.parseEther(currProduct.price) - ethers.utils.parseEther(currProduct.loyaltyTokensAccepted)) * currQuantity;
         
         // Add the amount of loyalty tokens used for this product to totalLoyaltyTokensUsed
-        totalLoyaltyTokensUsed += loyaltyTokensAccepted * quantities[i];
+        totalLoyaltyTokensUsed += ethers.utils.parseEther(currProduct.loyaltyTokensAccepted) * currQuantity;
       }
+
+      setTotalPrice(totalCost)
+      setPayableInFlips(totalLoyaltyTokensUsed)
     }
 
+  }, [items])
+
+  const purchase = async (e) => {
     e.preventDefault();
+
     setLoading(true);
 
-    const transaction = await purchaseProducts(productIds, quantities, fullPaymentInMatic, totalCost, totalLoyaltyTokensUsed);
+    const transaction = await purchaseProducts(productIds, quantities, fullPaymentInMatic, totalPrice, payableInFlips);
 
     const transactionReceipt = await transaction.wait();
 
@@ -69,7 +76,7 @@ function Cart() {
           </h2>
           <div className="pt-5 pb-5 flex flex-col gap-[12px] pl-3 pr-3 border-b-[1px] border-slate-400">
           <div className="flex justify-between">
-              <h3>Price {`(${productIds.length} Items)`}</h3>
+              <h3>Price {`(${items.length} Items)`}</h3>
               <h3>{totalPrice} MATIC</h3>
             </div>
             <div className="flex justify-between">
@@ -78,21 +85,21 @@ function Cart() {
             </div>
           </div>
           <div className="flex text-lg font-semibold justify-between pt-3 pb-3">
-            <h3>Total Price</h3>
+            <h3>Total MATIC payable</h3>
             <h3>{totalPrice - payableInFlips} MATIC</h3>
           </div>
           <h2 onClick={(e) => {
-            purchase(e, productIds, quantities, fullPaymentInMatic);
-          }}  className="text-center pt-3 pb-3 mt-1 border-[1px] border-slate-500">
+            purchase(e);
+          }}  className="text-center pt-3 pb-3 mt-1 border-[1px] border-slate-500 cursor-pointer">
             Proceed
           </h2>
         </section>
         <section className="xl:w-3/4 lg:w-7/12 lg:mt-0 mt-6">
           <div className="grid grid-cols-1 gap-[10px]">
 
-          {items?.map((item)=>{
+          {items?.map((item, index)=>{
             return(
-              <CartCard item={item}/>
+              <CartCard item={item} key={index} />
             )
           })}
           </div>
@@ -103,7 +110,7 @@ function Cart() {
           </h2>
           <div className="pt-5 pb-5 flex flex-col gap-[12px] pl-3 pr-3 border-b-[1px] border-slate-400">
           <div className="flex justify-between">
-              <h3>Price {`(${productIds.length} Items)`}</h3>
+              <h3>Price {`(${items.length} Items)`}</h3>
               <h3>{totalPrice} MATIC</h3>
             </div>
             <div className="flex justify-between">
@@ -112,12 +119,12 @@ function Cart() {
             </div>
           </div>
           <div className="flex text-lg font-semibold justify-between pt-3 pb-3">
-            <h3>Total Price</h3>
+            <h3>Total MATIC payable</h3>
             <h3>{totalPrice - payableInFlips} MATIC</h3>
           </div>
           <h2 onClick={(e) => {
-            purchase(e, productIds, quantities, fullPaymentInMatic);
-          }}  className="text-center pt-3 pb-3 mt-1 border-[1px] border-slate-500">
+            purchase(e);
+          }}  className="text-center pt-3 pb-3 mt-1 border-[1px] border-slate-500 cursor-pointer">
             Proceed
           </h2>
         </section>

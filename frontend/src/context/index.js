@@ -3,9 +3,11 @@ import { ethers } from "ethers";
 import eCommerceLoyalty from "../artifacts/contracts/Loyalty.sol/ECommerceLoyalty.json";
 import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json";
 
-// 0x44eb92EA9164B24B2eeE88Ef8F697076668D9096
-
 const StateContext = createContext();
+
+// These addresses need to be changed every time
+const loyaltyAddress = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
+const lrtAddress = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
 
 export const StateContextProvider = ({ children }) => {
 
@@ -20,7 +22,7 @@ export const StateContextProvider = ({ children }) => {
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
       const signerInstance = web3Provider.getSigner();
       const contractInstance = new ethers.Contract(
-        "0xB62FCB99B2acd625F38e92E39F40D517eE14ecC2",
+        loyaltyAddress,
         eCommerceLoyalty.abi,
         signerInstance
       );
@@ -62,7 +64,7 @@ export const StateContextProvider = ({ children }) => {
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
       const signerInstance = web3Provider.getSigner();
       const contractInstance = new ethers.Contract(
-        "0xB62FCB99B2acd625F38e92E39F40D517eE14ecC2",
+        loyaltyAddress,
         eCommerceLoyalty.abi,
         signerInstance
       );
@@ -152,7 +154,7 @@ export const StateContextProvider = ({ children }) => {
 
 
   const loyaltyTokenContract = new ethers.Contract(
-    "0x2128828f4d34787f79A43b7619046338c26Fef06", // needs to be changed every time
+    lrtAddress,
     loyaltyToken.abi,
     signer
   );

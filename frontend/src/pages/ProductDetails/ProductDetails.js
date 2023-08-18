@@ -4,6 +4,7 @@ import { AiFillCaretLeft } from "react-icons/ai";
 import { AiFillCaretRight } from "react-icons/ai";
 import { useStateContext } from "../../context";
 import { useSelector, useDispatch } from "react-redux";
+import { ethers } from "ethers";
 
 function ProductDetails() {
   const [count, setCount] = useState(1);
@@ -34,7 +35,7 @@ function ProductDetails() {
         item.product.productId === myProduct.productId
       )
       if(flag.length === 0){
-        data.push({product:myProduct, quantity:count});
+        data.push({product:myProduct, quantity:count, fullPaymentInMatic: true});
         localStorage.setItem("flipkart", JSON.stringify(data));
         console.log("HA")
       }else{
@@ -51,7 +52,7 @@ function ProductDetails() {
       
     }
     else{
-      localStorage.setItem("flipkart", JSON.stringify([{product:myProduct, quantity:count}]));
+      localStorage.setItem("flipkart", JSON.stringify([{product:myProduct, quantity:count, fullPaymentInMatic: true}]));
       console.log("hi")
     }
     console.log(data);
