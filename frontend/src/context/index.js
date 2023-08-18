@@ -179,6 +179,7 @@ export const StateContextProvider = ({ children }) => {
     <StateContext.Provider
       value={{
         contract,
+        loyaltyTokenContract,
         registerSeller,
         addProduct,
         purchaseProducts,
