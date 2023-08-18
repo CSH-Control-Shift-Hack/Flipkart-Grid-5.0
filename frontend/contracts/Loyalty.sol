@@ -61,6 +61,11 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
     uint256 public nextProductId = 1;
     uint256 public nextOrderId = 1;
 
+    // Seller issuance cap
+    uint256 public constant SELLER_CAP = 5000 * (10 ** 18);
+    mapping(address => uint256) public monthlyIssuedBySeller;
+    mapping(address => uint256) public lastIssuedMonth;
+
     // Events
     event SellerRegistered(address indexed sellerAddress);
     event UserRegistered(address indexed userAddress);
@@ -232,6 +237,27 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
     }
 
     // ... Additional functions for other functionalities ...
+
+    function issueTokens(address to, uint256 amount) public onlyAdmin {
+        require(amount <= loyaltyToken.balanceOf(address(this)), "Not enough tokens in treasury");
+        loyaltyToken.transfer(to, amount);
+    }
+
+    function issueTokensBySeller(address to, uint256 amount) public onlySeller {
+        require(amount <= SELLER_CAP, "Exceeds monthly cap");
+
+        // Reset monthly issued amount if a new month
+        if (block.timestamp > lastIssuedMonth[msg.sender] + 30 days) {
+            monthlyIssuedBySeller[msg.sender] = 0;
+            lastIssuedMonth[msg.sender] = block.timestamp;
+        }
+
+        require(monthlyIssuedBySeller[msg.sender].add(amount) <= SELLER_CAP, "Exceeds monthly cap for seller");
+        require(amount <= loyaltyToken.balanceOf(address(this)), "Not enough tokens in treasury");
+
+        loyaltyToken.transfer(to, amount);
+        monthlyIssuedBySeller[msg.sender] = monthlyIssuedBySeller[msg.sender].add(amount);
+    }
 
     // Function to exchange LRT for MATIC
     function exchangeLRTForMATIC(uint256 lrtAmount) external {
