@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { changeCurrProduct } from "../actions/index"
 
-function CartCard() {
+function CartCard({item}) {
 
   const nav = useNavigate()
   const dispatch = useDispatch();
@@ -11,6 +11,16 @@ function CartCard() {
   const handleNav = () => {
     nav("/productdetails")
   }
+
+  const removeFromCart = () => {
+    let data = []
+    data = JSON.parse(localStorage.getItem("flipkart"));
+    localStorage.removeItem("flipkart");
+    data.filter((obj) => obj.productId    !== item?.productId);
+    localStorage.setItem("flipkart", JSON.stringify([]));
+    console.log(data);
+    nav('/')
+  };
 
   return (
     <div onClick={handleNav} className="bg-[#e1ecf1] cursor-pointer border-[1px] border-slate-500 rounded p-3">
@@ -37,7 +47,7 @@ function CartCard() {
             <h3 className="text-center font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
               $25
             </h3>
-            <h3 className="text-center font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
+            <h3 onClick={removeFromCart} className="text-center cursor-pointer font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
               Remove
             </h3>
           </div>

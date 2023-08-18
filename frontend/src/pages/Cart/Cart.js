@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import CartCard from "../../components/CartCard";
 
 function Cart() {
+
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem("flipkart")));
+
+  console.log(items)
   
   return (
     <div className="bg-slate-100">
@@ -34,10 +38,12 @@ function Cart() {
           </h2>
         </section>
         <section className="xl:w-3/4 lg:w-7/12 grid grid-cols-1 gap-[10px] lg:mt-0 mt-6">
-          <CartCard />
-          <CartCard />
-          <CartCard />
-          <CartCard />
+
+          {items?.map((item)=>{
+            return(
+              <CartCard item={item}/>
+            )
+          })}
         </section>
         <section className="xl:w-1/4 lg:w-5/12 lg:block hidden bg-white p-3 h-fit">
           <h2 className="text-slate-600 text-lg pt-2 pb-2 border-b-[1px] border-slate-500">

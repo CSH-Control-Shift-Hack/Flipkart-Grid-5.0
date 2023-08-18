@@ -3,26 +3,39 @@ import Navbar from "../../components/Navbar";
 import { AiFillCaretLeft } from "react-icons/ai";
 import { AiFillCaretRight } from "react-icons/ai";
 import { useStateContext } from "../../context";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 
 function ProductDetails() {
   const [count, setCount] = useState(1);
 
   const { purchaseProduct } = useStateContext();
 
-  const myProduct=useSelector((state)=> 
-    state.changeCurrProduct
-  );
+  const myProduct = useSelector((state) => state.changeCurrProduct);
 
-  console.log(myProduct)
+  console.log(myProduct);
 
   const purchase = async () => {
     try {
-      const data = await purchaseProduct([0],[1],[true],1,2,0);
+      const data = await purchaseProduct([0], [1], [true], 1, 2, 0);
       console.log(data);
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const addToCart = () => {
+    let data = []
+    data = JSON.parse(localStorage.getItem("flipkart"));
+    localStorage.removeItem("flipkart");
+    if (data) {
+      data.push(myProduct);
+      localStorage.setItem("flipkart", JSON.stringify(data));
+    }
+    else{
+      localStorage.setItem("flipkart", JSON.stringify([myProduct]));
+      console.log("hi")
+    }
+    console.log(data);
   };
 
   return (
@@ -32,20 +45,17 @@ function ProductDetails() {
         <div className="lg:flex gap-[25px] rounded border-[2px] border-slate-500 md:p-4 p-2">
           <div className="lg:min-h-[450px] lg:w-1/2 w-full">
             <img
-              src={
-                myProduct?.imageURI
-              }
+              src={myProduct?.imageURI}
               className="h-full w-full rounded lg:max-h-[1000px] md:max-h-[400px] sm:max-h-[320px] max-h-[250px]"
             />
           </div>
           <section className="lg:w-1/2 w-full lg:pt-0 pt-5 flex flex-col justify-between">
             <div className="">
               <h2 className="text-4xl font-semibold">{myProduct?.name}</h2>
-              <h4 className="text-slate-600 mt-3">
-                {myProduct?.description}
-              </h4>
+              <h4 className="text-slate-600 mt-3">{myProduct?.description}</h4>
               <h3 className="font-semibold text-2xl mt-2">
-                {myProduct?.price} MATIC ({myProduct?.loyaltyTokensAccepted} FLIPS can be used)
+                {myProduct?.price} MATIC ({myProduct?.loyaltyTokensAccepted}{" "}
+                FLIPS can be used)
               </h3>
             </div>
             <div className=" mt-8">
@@ -67,10 +77,16 @@ function ProductDetails() {
                 />
               </section>
               <div className="grid grid-cols-2 gap-[12px] mt-6">
-                <h3 className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded">
+                <h3
+                  onClick={addToCart}
+                  className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded"
+                >
                   Add To Cart
                 </h3>
-                <h3 onClick={purchase} className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded">
+                <h3
+                  onClick={purchase}
+                  className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded"
+                >
                   Buy Now
                 </h3>
               </div>

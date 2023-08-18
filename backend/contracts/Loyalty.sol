@@ -175,6 +175,10 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
         return productList;
     }
 
+    function getLeaderBoard() public view returns (address[] memory){
+        return leaderboard;
+    }
+
     // Functions for Chainlink Automation oracles
     function checkUpkeep(bytes memory /* checkData */) public view returns (bool upkeepNeeded, bytes memory performData) {
         

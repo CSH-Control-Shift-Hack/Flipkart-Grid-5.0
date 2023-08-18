@@ -13,7 +13,7 @@ export const StateContextProvider = ({ children }) => {
   const signer = provider.getSigner();
 
   const contract = new ethers.Contract(
-    "0xB62FCB99B2acd625F38e92E39F40D517eE14ecC2", // needs to be changed every time
+    "0xae02F2b88BDF6e38A5Ae40EE6A38f66bee53b113", // needs to be changed every time
     eCommerceLoyalty.abi,
     signer
   );
@@ -22,6 +22,10 @@ export const StateContextProvider = ({ children }) => {
 
     const projectData = await contract.registerSeller();
   };
+
+  const registerUser = async () => {
+    const projectData = await contract.registerUser()
+  }
 
   const addProduct = async (_name, _desc, _quantity, _price, _rewardPoints, _loyaltyTokensAccepted, _imageUrl) => {
 
@@ -79,7 +83,7 @@ export const StateContextProvider = ({ children }) => {
   }
 
   const getAllUsers = async () => {
-    const projectData = await contract.leaderboard
+    const projectData = await contract.getLeaderBoard()
     return projectData
   }
 
@@ -121,7 +125,8 @@ export const StateContextProvider = ({ children }) => {
         withdrawTokens,
         withdrawMATIC,
         getAllProducts,
-        getAllUsers
+        getAllUsers,
+        registerUser
       }}
     >
       {children}

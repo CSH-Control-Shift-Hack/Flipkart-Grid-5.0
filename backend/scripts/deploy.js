@@ -6,7 +6,7 @@ async function main() {
     // console.log("Account balance:", (await deployer.getBalance()).toString());
   
     const CrowdFunding = await ethers.getContractFactory("ECommerceLoyalty");
-    const funding = await CrowdFunding.deploy('0x863441952A806c680cea03915077B72876DA17f3');
+    const funding = await CrowdFunding.deploy('0x863441952A806c680cea03915077B72876DA17f3', 3600);
   
     console.log("Contract address:", funding);
   }
