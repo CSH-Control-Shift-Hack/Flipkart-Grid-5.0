@@ -1,4 +1,4 @@
-import React, { useContext, createContext } from "react";
+import React, { useState, useEffect, useContext, createContext } from "react";
 import { ethers } from "ethers";
 import eCommerceLoyalty from "../artifacts/contracts/Loyalty.sol/ECommerceLoyalty.json";
 import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json";
@@ -9,14 +9,75 @@ const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  const [provider, setProvider] = useState(null);
+  const [signer, setSigner] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [currentAccount, setCurrentAccount] = useState(null);
 
-  const contract = new ethers.Contract(
-    "0xB62FCB99B2acd625F38e92E39F40D517eE14ecC2", // needs to be changed every time
-    eCommerceLoyalty.abi,
-    signer
-  );
+  const connectToMetaMask = async () => {
+    if (window.ethereum) {
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signerInstance = web3Provider.getSigner();
+      const contractInstance = new ethers.Contract(
+        "0xB62FCB99B2acd625F38e92E39F40D517eE14ecC2",
+        eCommerceLoyalty.abi,
+        signerInstance
+      );
+
+      setProvider(web3Provider);
+      setSigner(signerInstance);
+      setContract(contractInstance);
+
+      try {
+        // Request account access
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setCurrentAccount(accounts[0]);
+        setIsConnected(true);
+      } catch (error) {
+        console.error("User rejected the connect request");
+      }
+
+      // Subscribe to accounts change
+      window.ethereum.on('accountsChanged', (accounts) => {
+        setCurrentAccount(accounts[0]);
+      });
+    } else {
+      console.log("No web3? You should consider trying MetaMask!");
+    }
+  };
+
+  // Automatically connect to MetaMask if an account is already connected
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then(accounts => {
+          if (accounts.length > 0) {
+            // MetaMask is already connected
+            setCurrentAccount(accounts[0]);
+            setIsConnected(true);
+          }
+        });
+
+      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signerInstance = web3Provider.getSigner();
+      const contractInstance = new ethers.Contract(
+        "0xB62FCB99B2acd625F38e92E39F40D517eE14ecC2",
+        eCommerceLoyalty.abi,
+        signerInstance
+      );
+
+      setProvider(web3Provider);
+      setSigner(signerInstance);
+      setContract(contractInstance);
+    }
+  }, []);
+
+  useEffect(() => {
+
+    console.log(contract);
+
+  }, [contract])
 
   const registerSeller = async () => {
 
@@ -29,9 +90,9 @@ export const StateContextProvider = ({ children }) => {
 
   }
 
-  const purchaseProduct = async (_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalRewardPoints, _totalLoyaltyTokenUsed) => {
+  const purchaseProducts = async (_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed) => {
 
-    const projectData = await contract.purchaseProduct(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalRewardPoints, _totalLoyaltyTokenUsed);
+    const projectData = await contract.purchaseProducts(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed);
   };
 
   const exchangeLRTForMATIC = async (_amount) => {
@@ -112,16 +173,20 @@ export const StateContextProvider = ({ children }) => {
   return (
     <StateContext.Provider
       value={{
+        contract,
         registerSeller,
         addProduct,
-        purchaseProduct,
+        purchaseProducts,
         exchangeLRTForMATIC,
         exchangeMATICForLRT,
         setLRTToken,
         withdrawTokens,
         withdrawMATIC,
         getAllProducts,
-        getAllUsers
+        getAllUsers,
+        connectToMetaMask,
+        isConnected,
+        currentAccount // Expose the current account to children components
       }}
     >
       {children}
