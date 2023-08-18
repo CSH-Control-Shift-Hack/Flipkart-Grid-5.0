@@ -26,7 +26,8 @@ export const StateContextProvider = ({ children }) => {
   const addProduct = async (_name, _desc, _quantity, _price, _rewardPoints, _loyaltyTokensAccepted, _imageUrl) => {
 
     const projectData = await contract.addProduct(_name, _desc, _quantity, _price, _rewardPoints, _loyaltyTokensAccepted, _imageUrl);
-  };
+
+  }
 
   const purchaseProduct = async (_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalRewardPoints, _totalLoyaltyTokenUsed) => {
 
@@ -106,7 +107,6 @@ export const StateContextProvider = ({ children }) => {
     await loyaltyTokenContract.issueTokensBySeller(_to, _amount);
 
   }
-
 
 
   return (
