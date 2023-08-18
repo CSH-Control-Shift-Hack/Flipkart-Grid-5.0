@@ -234,6 +234,11 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
 
     // ... Additional functions for other functionalities ...
 
+    function issueTokens(address to, uint256 amount) public onlyAdmin {
+        require(amount <= balanceOf(address(this)), "Not enough tokens in treasury");
+        loyaltyToken.transfer(to, amount);
+    }
+
     function issueTokensBySeller(address to, uint256 amount) public onlySeller {
         require(amount <= SELLER_CAP, "Exceeds monthly cap");
 

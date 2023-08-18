@@ -33,11 +33,6 @@ contract LoyaltyRewardToken is ERC20, Ownable {
         lastActive[user] = block.timestamp;
     }
 
-    function issueTokens(address to, uint256 amount) public onlyOwner {
-        require(amount <= balanceOf(address(this)), "Not enough tokens in treasury");
-        _transfer(address(this), to, amount);
-    }
-
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         super._beforeTokenTransfer(from, to, amount);
 
