@@ -56,7 +56,7 @@ function Profile() {
   const sellerSearch = async () => {
     try {
       const data = await searchSeller();
-      console.log(data?.sellerAddress);
+      console.log("seller search:", data?.sellerAddress);
       setIsSeller(data);
     } catch (e) {
       console.log(e);
@@ -68,7 +68,7 @@ function Profile() {
   const userSearch = async () => {
     try {
       const data = await searchUser();
-      console.log(data?.sellerAddress);
+      console.log(data?.userAddress);
       setIsUser(data);
     } catch (e) {
       console.log(e);
@@ -82,8 +82,9 @@ function Profile() {
       getProducts();
       getOrders();
       sellerSearch()
+      userSearch()
     }
-  }, [contract]);
+  }, [contract, currentAccount]);
 
   return (
     <div>
@@ -130,7 +131,7 @@ function Profile() {
             </div>
             <h3
               onClick={registerUser}
-              className={`text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500 ${isUser?.sellerAddress === '0x0000000000000000000000000000000000000000'? '':'hidden'}`}
+              className={`text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500 ${isUser?.userAddress === '0x0000000000000000000000000000000000000000'? '':'hidden'}`}
             >
               Register As User
             </h3>

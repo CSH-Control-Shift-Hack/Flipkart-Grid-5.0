@@ -6,7 +6,7 @@ import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json
 const StateContext = createContext();
 
 // These addresses need to be changed every time
-const loyaltyAddress = "0xc5a5C42992dECbae36851359345FE25997F5C42d"
+const loyaltyAddress = "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E"
 const lrtAddress = "0x09635F643e140090A9A8Dcd712eD6285858ceBef"
 
 export const StateContextProvider = ({ children }) => {
@@ -92,9 +92,8 @@ export const StateContextProvider = ({ children }) => {
   }
 
   const purchaseProducts = async (_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed) => {
-    console.log("Received totalCost: ", _totalCost )
 
-    const projectData = await contract.purchaseProducts(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed,  { value: _totalCost.toString(), gasLimit: 10000000 });
+    const projectData = await contract.purchaseProducts(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed, { value: _totalCost });
   };
 
   const exchangeLRTForMATIC = async (_amount) => {
@@ -103,6 +102,7 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const exchangeMATICForLRT = async (_amount) => {
+    console.log(_amount)
 
     const projectData = await contract.exchangeMATICForLRT({ value: ethers.utils.parseEther(_amount) });
   };
@@ -246,7 +246,7 @@ export const StateContextProvider = ({ children }) => {
         getUserOrders,
         searchSeller,
         searchUser,
-        currentAccount // Expose the current account to children components
+        currentAccount
       }}
     >
       {children}

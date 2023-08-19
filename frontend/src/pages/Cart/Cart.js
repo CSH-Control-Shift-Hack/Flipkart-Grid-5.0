@@ -53,9 +53,6 @@ function Cart() {
 
   }, [items])
 
-  console.log(totalPrice, payableInFlips)
-  console.log(productIds, quantities, fullPaymentInMatic)
-
   const purchase = async (e) => {
     console.log(fullPaymentInMatic)
     e.preventDefault();
