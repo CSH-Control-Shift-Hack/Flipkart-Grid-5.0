@@ -12,6 +12,8 @@ function Card({item}) {
     dispatch(changeCurrProduct(item))
     nav("/productdetails")
   }
+
+  console.log(item?.sellerAddress)
   
   return (
     <div onClick={handleNav} className="bg-[#e1ecf1] border-[1px] cursor-pointer border-slate-500 rounded">

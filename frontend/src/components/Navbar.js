@@ -52,7 +52,9 @@ function Navbar() {
         <div className="flex flex-col justify-center mr-3">
         {
           !isConnected ? (
-            <button onClick={connectToMetaMask}>Connect to MetaMask</button>
+            <div className="flex flex-col justify-center">
+            <button className="pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-200 text-slate-100" onClick={connectToMetaMask}>Connect to MetaMask</button>
+            </div>
           ) : (
             <CgProfile
               onClick={ProfileNav}

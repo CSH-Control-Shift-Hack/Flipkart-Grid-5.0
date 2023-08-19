@@ -180,6 +180,17 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
         return productList;
     }
 
+    function getUserOrders(address _add) public view returns (Product[] memory) {
+
+        Product[] memory productList = new Product[](users[_add].orderIds.length);
+
+        for (uint256 i = 0; i < users[_add].orderIds.length; i++) {
+            productList[i - 1] = products[orders[users[_add].orderIds[i]].productId];
+        }
+
+        return productList;
+    }
+
     function getLeaderBoard() public view returns (address[] memory){
         return leaderboard;
     }

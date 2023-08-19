@@ -15,15 +15,6 @@ function ProductDetails() {
 
   console.log(myProduct);
 
-  const purchase = async () => {
-    try {
-      const data = await purchaseProduct([0], [1], [true], 1, 2, 0);
-      console.log(data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   console.log(myProduct)
 
   const addToCart = () => {
@@ -96,18 +87,12 @@ function ProductDetails() {
                   className="h-10 cursor-pointer w-10"
                 />
               </section>
-              <div className="grid grid-cols-2 gap-[12px] mt-6">
+              <div className="grid grid-cols-1 mt-6">
                 <h3
                   onClick={addToCart}
                   className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded"
                 >
                   Add To Cart
-                </h3>
-                <h3
-                  onClick={purchase}
-                  className="pt-3 pb-3 cursor-pointer text-center bg-blue-600 text-slate-100 rounded"
-                >
-                  Buy Now
                 </h3>
               </div>
             </div>

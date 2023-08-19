@@ -12,23 +12,24 @@ function UploadProduct() {
   const rewardPoints = useRef()
   const loyaltyTokens = useRef()
   const desc = useRef()
+  const img = useRef()
 
   const { addProduct, loyaltyTokenContract } = useStateContext();
 
     const addAProduct = async () => {
 
-      let _price = price.current.value
-      let _rewardPoints = rewardPoints.current.value
-      let _loyaltyTokens = loyaltyTokens.current.value
+      // let _price = price.current.value
+      // let _rewardPoints = rewardPoints.current.value
+      // let _loyaltyTokens = loyaltyTokens.current.value
 
-      let approvalTokens = _rewardPoints * quantity.current.value
-      let _appTokens = ethers.utils.parseEther(approvalTokens.toString())
+      // let approvalTokens = _rewardPoints * quantity.current.value
+      // let _appTokens = ethers.utils.parseEther(approvalTokens.toString())
 
     try {
-        const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, _appTokens)
-        const transactionReceipt = await transaction.wait();
+        // const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, _appTokens)
+        // const transactionReceipt = await transaction.wait();
         
-        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, _price, ethers.utils.parseEther(_rewardPoints), ethers.utils.parseEther(_loyaltyTokens), 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_640.jpg');
+        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, price.current.value, rewardPoints.current.value, loyaltyTokens.current.value, img.current.value);
         console.log(data)
     } catch (e) {
       console.log(e);
@@ -55,14 +56,10 @@ function UploadProduct() {
           <h4 className="font-semibold mb-1 mt-5">Product Image* </h4>
           <div className="border-[1px] border-slate-600 p-3">
             <input
-              type="file"
-              // onChange={(e)=>{
-              //   if(e.target.files){
-              //       setFile1(e.target.files[0]);
-              //   }
-              // }}
+              type="text"
               className="w-full bg-transparent pt-1 pb-1 placeholder:text-slate-600 placeholder:text-sm focus:outline-0"
-              placeholder="EUpload an image for your product *"
+              placeholder="Enter image URL for your product *"
+              ref={img}
             />
           </div>
           <h4 className="font-semibold mb-1 mt-5">Product Price* </h4>

@@ -6,7 +6,7 @@ import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json
 const StateContext = createContext();
 
 // These addresses need to be changed every time
-const loyaltyAddress = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
+const loyaltyAddress = "0xd98c36d01949411BA9dC4B7b22d89Bf57e2543C7"
 const lrtAddress = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
 
 export const StateContextProvider = ({ children }) => {
@@ -146,6 +146,46 @@ export const StateContextProvider = ({ children }) => {
     return AllProducts
   }
 
+  const getUserOrders = async () => {
+    console.log("AAJA")
+    const projectData = await contract.getUserOrders(currentAccount)
+
+    const AllProducts = projectData.map((product, i) => ({
+      description: product.description,
+      imageURI: product.imageURI,
+      loyaltyTokensAccepted: ethers.utils.formatEther(product.loyaltyTokensAccepted)*1000000000000000000,
+      name: product.name,
+      price: ethers.utils.formatEther(product.price)*1000000000000000000,
+      productId: ethers.utils.formatEther(product.productId)*1000000000000000000,
+      quantity: ethers.utils.formatEther(product.quantity)*1000000000000000000,
+      rewardPoints: ethers.utils.formatEther(product.rewardPoints)*1000000000000000000,
+      sellerAddress: product.sellerAddress,
+    }));
+
+    return AllProducts
+  }
+
+  const getUserProducts = async () => {
+    console.log("AAJA")
+    const projectData = await contract.getAllProducts()
+
+    const AllProducts = projectData.map((product, i) => ({
+      description: product.description,
+      imageURI: product.imageURI,
+      loyaltyTokensAccepted: ethers.utils.formatEther(product.loyaltyTokensAccepted)*1000000000000000000,
+      name: product.name,
+      price: ethers.utils.formatEther(product.price)*1000000000000000000,
+      productId: ethers.utils.formatEther(product.productId)*1000000000000000000,
+      quantity: ethers.utils.formatEther(product.quantity)*1000000000000000000,
+      rewardPoints: ethers.utils.formatEther(product.rewardPoints)*1000000000000000000,
+      sellerAddress: product.sellerAddress,
+    }));
+
+    const final = AllProducts.filter((item)=>item?.sellerAddress.toUpperCase() === currentAccount.toUpperCase())
+
+    return final
+  }
+
   const getAllUsers = async () => {
     const projectData = await contract.leaderboard
     return projectData
@@ -195,6 +235,8 @@ export const StateContextProvider = ({ children }) => {
         connectToMetaMask,
         isConnected,
         registerUser,
+        getUserProducts,
+        getUserOrders,
         currentAccount // Expose the current account to children components
       }}
     >

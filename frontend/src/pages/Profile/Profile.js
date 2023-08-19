@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import ProfileCard from "../../components/ProfieCard";
 import Card from "../../components/ProductCard";
@@ -9,13 +9,54 @@ import { useStateContext } from "../../context";
 function Profile() {
   const [visible, setVisible] = useState(0);
 
-  const nav = useNavigate()
-  
-  const uploadNav = () => {
-    nav("/uploadproduct")
-  }
+  const nav = useNavigate();
 
-  const { registerSeller , registerUser } = useStateContext();
+  const uploadNav = () => {
+    nav("/uploadproduct");
+  };
+
+  const {
+    registerSeller,
+    registerUser,
+    currentAccount,
+    getAllProducts,
+    contract,
+    getUserProducts,
+    getUserOrders
+  } = useStateContext();
+
+  const [products, setProducts] = useState([]);
+
+  const getProducts = async () => {
+    try {
+      const data = await getUserProducts();
+      console.log(data);
+      setProducts(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [orders, setOrders] = useState([]);
+
+  const getOrders = async () => {
+    try {
+      const data = await getUserOrders();
+      console.log(data);
+      setOrders(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  console.log(orders)
+
+  useEffect(() => {
+    if (contract) {
+      getProducts();
+      getOrders();
+    }
+  }, [contract]);
 
   return (
     <div>
@@ -60,7 +101,10 @@ function Profile() {
                 FLIPS Available: 5
               </h3>
             </div>
-            <h3 onClick={registerUser} className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500">
+            <h3
+              onClick={registerUser}
+              className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500"
+            >
               Register As User
             </h3>
           </div>
@@ -79,23 +123,29 @@ function Profile() {
                 FLIPS Available: 5
               </h3>
             </div>
-            <h3 onClick={uploadNav} className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500">
+            <h3
+              onClick={uploadNav}
+              className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500"
+            >
               Add New Product
             </h3>
-            <h3 onClick={registerSeller} className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500">
+            <h3
+              onClick={registerSeller}
+              className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500"
+            >
               Register As Seller
             </h3>
           </div>
           <section className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-x-[12px] gap-y-[18px] md:mt-8 mt-5">
-            <Card />
-            <Card />
-            <Card />
-            <Card />
-            <Card />
+          {products?.map((item, i)=>{
+            return(
+            <Card key = {i} item={item}/>
+            )
+          })}
           </section>
         </div>
         <div className={`md:mt-8 mt-5 ${visible === 2 ? "" : "hidden"}`}>
-          <Rewards/>
+          <Rewards />
         </div>
       </div>
     </div>

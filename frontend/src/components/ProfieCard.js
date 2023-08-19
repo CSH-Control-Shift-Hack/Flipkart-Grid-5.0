@@ -33,7 +33,7 @@ function ProfileCard() {
           </div>
           <div className="flex sm:flex-row flex-col gap-[15px] mt-2">
             <h3 className="text-center font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
-              Pending
+              23 MATIC
             </h3>
             <h3 className="text-center font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
               Date: 23-06-2003
