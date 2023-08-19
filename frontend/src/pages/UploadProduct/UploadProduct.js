@@ -18,18 +18,25 @@ function UploadProduct() {
 
     const addAProduct = async () => {
 
-      // let _price = price.current.value
-      // let _rewardPoints = rewardPoints.current.value
-      // let _loyaltyTokens = loyaltyTokens.current.value
+      let _price = price.current.value
+      let _rewardPoints = rewardPoints.current.value
+      let _loyaltyTokens = loyaltyTokens.current.value
+      let _quantity = quantity.current.value;
 
-      // let approvalTokens = _rewardPoints * quantity.current.value
-      // let _appTokens = ethers.utils.parseEther(approvalTokens.toString())
+        let _priceInEther = ethers.utils.parseEther(_price);
+        let _rewardPointsInEther = ethers.utils.parseEther(_rewardPoints);
+        let _loyaltyTokensInEther = ethers.utils.parseEther(_loyaltyTokens);
+
+       let approvalTokens = parseFloat(_rewardPoints) * parseFloat(_quantity);
+        console.log(ethers.utils.parseEther(approvalTokens.toString()))
 
     try {
-        // const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, _appTokens)
-        // const transactionReceipt = await transaction.wait();
+        const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, ethers.utils.parseEther(approvalTokens.toString()));
+        const transactionReceipt = await transaction.wait();
         
-        const data = await addProduct(name.current.value, desc.current.value, quantity.current.value, price.current.value, rewardPoints.current.value, loyaltyTokens.current.value, img.current.value);
+        const data = await addProduct(name.current.value, desc.current.value, _quantity,_priceInEther, 
+      _rewardPointsInEther, 
+      _loyaltyTokensInEther, img.current.value);
         console.log(data)
     } catch (e) {
       console.log(e);

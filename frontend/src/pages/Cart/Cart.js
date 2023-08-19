@@ -19,6 +19,8 @@ function Cart() {
 
   useEffect(() => {
 
+    console.log(items)
+
     let totalCost = 0, totalLoyaltyTokensUsed = 0;
 
     for(let i = 0; i < items.length; i++) {
@@ -30,15 +32,18 @@ function Cart() {
       quantities.push(currQuantity)
       fullPaymentInMatic.push(currFullPaymentInMatic)
 
+      console.log(currProduct.price)
+
+
        if (currFullPaymentInMatic) {
-        totalCost += ethers.utils.parseEther(currProduct.price) * currQuantity;
+        totalCost += ethers.utils.formatEther(currProduct.price.toString()) * currQuantity;
       } else {
         // If the product is not fully paid in Matic, 
         // add the remaining cost after using loyalty tokens to totalCost
-        totalCost += (ethers.utils.parseEther(currProduct.price) - ethers.utils.parseEther(currProduct.loyaltyTokensAccepted)) * currQuantity;
+        totalCost += ethers.utils.formatEther((currProduct.price - currProduct.loyaltyTokensAccepted).toString()) * currQuantity;
         
         // Add the amount of loyalty tokens used for this product to totalLoyaltyTokensUsed
-        totalLoyaltyTokensUsed += ethers.utils.parseEther(currProduct.loyaltyTokensAccepted) * currQuantity;
+        totalLoyaltyTokensUsed += ethers.utils.formatEther(currProduct.loyaltyTokensAccepted.toString()) * currQuantity;
       }
 
       setTotalPrice(totalCost)

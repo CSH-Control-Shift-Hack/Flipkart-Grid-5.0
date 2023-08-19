@@ -2,7 +2,8 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { changeCurrProduct } from "../actions/index"
-function ProfileCard() {
+
+function ProfileCard({order }) {
 
   const nav = useNavigate()
   const dispatch = useDispatch();

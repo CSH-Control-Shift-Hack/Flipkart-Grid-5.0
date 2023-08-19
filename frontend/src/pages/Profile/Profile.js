@@ -1,6 +1,6 @@
 import React, { useState , useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import ProfileCard from "../../components/ProfieCard";
+import ProfileCard from "../../components/ProfileCard";
 import Card from "../../components/ProductCard";
 import { Link, useNavigate } from "react-router-dom";
 import Rewards from "./Rewards";
@@ -109,11 +109,11 @@ function Profile() {
             </h3>
           </div>
           <section className="grid lg:grid-cols-2 grid-cols-1 gap-x-[12px] gap-y-[18px] md:mt-8 mt-5">
-            <ProfileCard />
-            <ProfileCard />
-            <ProfileCard />
-            <ProfileCard />
-            <ProfileCard />
+          {
+            orders?.map((item, index) => (
+              <ProfileCard order={item} />
+            ))
+          }
           </section>
         </div>
         <div className={`md:mt-8 mt-5 ${visible === 1 ? "" : "hidden"}`}>

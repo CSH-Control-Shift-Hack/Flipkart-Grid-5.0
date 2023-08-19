@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { changeCurrProduct } from "../actions/index"
+import { ethers } from "ethers";
 
 function CartCard({item}) {
 
@@ -17,9 +18,9 @@ function CartCard({item}) {
     let data = []
     data = JSON.parse(localStorage.getItem("flipkart"));
     localStorage.removeItem("flipkart");
-    data.filter((obj) => obj.productId    !== item?.productId);
-    localStorage.setItem("flipkart", JSON.stringify(data));
-    console.log(data);
+    let newData = data.filter((obj) => obj.productId    !== item?.productId);
+    localStorage.setItem("flipkart", JSON.stringify(newData));
+    console.log(newData);
     window.location.reload()
   };
 
@@ -45,7 +46,7 @@ function CartCard({item}) {
           </div>
           <div className="flex gap-[15px] mt-2">
             <h3 className="text-center font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
-              {item?.product.price} MATIC
+              {ethers.utils.formatEther(item?.product.price.toString())} {ethers.utils.formatEther(item?.product.loyaltyTokensAccepted.toString())} {ethers.utils.formatEther(item?.product.rewardPoints.toString())} MATIC
             </h3>
             <h3 onClick={removeFromCart} className="text-center cursor-pointer font-semibold pt-2 pb-2 pl-3 pr-3 border-[1px] border-slate-500 bg-[#aedbef]">
               Remove
