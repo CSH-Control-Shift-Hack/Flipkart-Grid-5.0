@@ -191,6 +191,14 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
         return productList;
     }
 
+    function searchUser(address _add) public view returns (User memory) {
+        return users[_add];
+    }
+
+    function searchSeller(address _add) public view returns (Seller memory) {
+        return sellers[_add];
+    }
+
     function getLeaderBoard() public view returns (address[] memory){
         return leaderboard;
     }

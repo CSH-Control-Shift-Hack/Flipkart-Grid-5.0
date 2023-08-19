@@ -6,7 +6,8 @@ import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json
 const StateContext = createContext();
 
 // These addresses need to be changed every time
-const loyaltyAddress = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
+const loyaltyAddress = "0xdacbf04042b3216A935DdD558b113A24379Bf9A6"
+// 0x68c9b7ff0264Ab5332dAf7f6136c09eac24AB6B8
 const lrtAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
 
 export const StateContextProvider = ({ children }) => {
@@ -127,6 +128,18 @@ export const StateContextProvider = ({ children }) => {
     const projectData = await contract.withdrawMATIC(_amount);
   };
 
+  const searchUser = async () => {
+
+    const projectData = await contract.searchUser(currentAccount);
+    return projectData
+  };
+
+  const searchSeller = async () => {
+
+    const projectData = await contract.searchSeller(currentAccount);
+    return projectData
+  };
+
   const getAllProducts = async () => {
     console.log("AAJA")
     const projectData = await contract.getAllProducts()
@@ -237,6 +250,8 @@ export const StateContextProvider = ({ children }) => {
         registerUser,
         getUserProducts,
         getUserOrders,
+        searchSeller,
+        searchUser,
         currentAccount // Expose the current account to children components
       }}
     >

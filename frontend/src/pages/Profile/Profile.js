@@ -22,7 +22,9 @@ function Profile() {
     getAllProducts,
     contract,
     getUserProducts,
-    getUserOrders
+    getUserOrders,
+    searchSeller,
+    searchUser
   } = useStateContext();
 
   const [products, setProducts] = useState([]);
@@ -49,12 +51,37 @@ function Profile() {
     }
   };
 
+  const [isSeller, setIsSeller] = useState([]);
+
+  const sellerSearch = async () => {
+    try {
+      const data = await searchSeller();
+      console.log(data?.sellerAddress);
+      setIsSeller(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [isUser, setIsUser] = useState([]);
+
+  const userSearch = async () => {
+    try {
+      const data = await searchUser();
+      console.log(data?.sellerAddress);
+      setIsUser(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   console.log(orders)
 
   useEffect(() => {
     if (contract) {
       getProducts();
       getOrders();
+      sellerSearch()
     }
   }, [contract]);
 
@@ -103,7 +130,7 @@ function Profile() {
             </div>
             <h3
               onClick={registerUser}
-              className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500"
+              className={`text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500 ${isUser?.sellerAddress === '0x0000000000000000000000000000000000000000'? '':'hidden'}`}
             >
               Register As User
             </h3>
@@ -125,13 +152,13 @@ function Profile() {
             </div>
             <h3
               onClick={uploadNav}
-              className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500"
+              className={`text-center ${isSeller?.sellerAddress === '0x0000000000000000000000000000000000000000'? 'hidden':''} font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500`}
             >
               Add New Product
             </h3>
             <h3
               onClick={registerSeller}
-              className="text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500"
+              className={`text-center font-semibold cursor-pointer pl-3 pr-3 pt-2 pb-2 border-[1px] border-slate-500 ${isSeller?.sellerAddress === '0x0000000000000000000000000000000000000000'? '':'hidden'} `}
             >
               Register As Seller
             </h3>

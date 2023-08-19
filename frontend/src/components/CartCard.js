@@ -18,7 +18,7 @@ function CartCard({item}) {
     let data = []
     data = JSON.parse(localStorage.getItem("flipkart"));
     localStorage.removeItem("flipkart");
-    let newData = data.filter((obj) => obj.productId    !== item?.productId);
+    let newData = data.filter((obj) => obj.product?.productId    !== item?.product?.productId);
     localStorage.setItem("flipkart", JSON.stringify(newData));
     console.log(newData);
     window.location.reload()
