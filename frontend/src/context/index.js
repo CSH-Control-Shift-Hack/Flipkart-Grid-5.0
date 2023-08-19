@@ -6,9 +6,8 @@ import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json
 const StateContext = createContext();
 
 // These addresses need to be changed every time
-const loyaltyAddress = "0xdacbf04042b3216A935DdD558b113A24379Bf9A6"
-// 0x68c9b7ff0264Ab5332dAf7f6136c09eac24AB6B8
-const lrtAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+const loyaltyAddress = "0xc5a5C42992dECbae36851359345FE25997F5C42d"
+const lrtAddress = "0x09635F643e140090A9A8Dcd712eD6285858ceBef"
 
 export const StateContextProvider = ({ children }) => {
 
@@ -93,18 +92,19 @@ export const StateContextProvider = ({ children }) => {
   }
 
   const purchaseProducts = async (_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed) => {
+    console.log("Received totalCost: ", _totalCost )
 
-    const projectData = await contract.purchaseProducts(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed);
+    const projectData = await contract.purchaseProducts(_productIds, _quantities, _fullPaymentInMatic, _totalCost, _totalLoyaltyTokenUsed,  { value: _totalCost.toString(), gasLimit: 10000000 });
   };
 
   const exchangeLRTForMATIC = async (_amount) => {
 
-    const projectData = await contract.exchangeLRTForMATIC(_amount);
+    const projectData = await contract.exchangeLRTForMATIC(ethers.utils.parseEther(_amount));
   };
 
-  const exchangeMATICForLRT = async () => {
+  const exchangeMATICForLRT = async (_amount) => {
 
-    const projectData = await contract.exchangeMATICForLRT();
+    const projectData = await contract.exchangeMATICForLRT({ value: ethers.utils.parseEther(_amount) });
   };
 
   const setLRTToken = async (address) => {

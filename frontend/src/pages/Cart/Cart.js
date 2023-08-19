@@ -62,12 +62,9 @@ function Cart() {
 
     setLoading(true);
 
-    const transaction = await purchaseProducts(productIds, quantities, fullPaymentInMatic, totalPrice, payableInFlips);
-
-    const transactionReceipt = await transaction.wait();
+    const transaction = await purchaseProducts(productIds, quantities, fullPaymentInMatic, ethers.utils.parseEther(totalPrice.toString()), ethers.utils.parseEther(payableInFlips.toString()));
 
     console.log("Products purchased!")
-    console.log(transactionReceipt)
 
     setLoading(false);
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { FaExchangeAlt } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -12,6 +13,10 @@ function Navbar() {
   const CartNav = () => {
     nav("/cart");
   };
+
+  const ExchangeNav = () => {
+    nav("/exchange");
+  }
 
   const ProfileNav = () => {
     nav("/profile");
@@ -46,6 +51,12 @@ function Navbar() {
         <div className="flex flex-col justify-center mr-3">
           <AiOutlineShoppingCart
             onClick={CartNav}
+            className="h-8 w-8 text-white ml-3 mr-3 cursor-pointer"
+          />
+        </div>
+        <div className="flex flex-col justify-center mr-3">
+          <FaExchangeAlt
+            onClick={ExchangeNav}
             className="h-8 w-8 text-white ml-3 mr-3 cursor-pointer"
           />
         </div>

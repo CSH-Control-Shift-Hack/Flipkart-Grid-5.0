@@ -7,6 +7,7 @@ import ProductDetails from './pages/ProductDetails/ProductDetails';
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Rules from './pages/Rules/Rules';
 import LeaderBoard from './pages/LeaderBoard/LeaderBoard';
+import Exchange from "./pages/Exchange/Exchange";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/productdetails" element={<ProductDetails/> } />
           <Route path="/rules" element={<Rules/> } />
           <Route path="/leaderboard" element={<LeaderBoard/> } />
+          <Route path="/exchange" element={<Exchange/> } />
         </Routes>
     </div>
   );

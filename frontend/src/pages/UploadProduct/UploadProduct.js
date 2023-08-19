@@ -14,7 +14,7 @@ function UploadProduct() {
   const desc = useRef()
   const img = useRef()
 
-  const { addProduct, loyaltyTokenContract } = useStateContext();
+  const { addProduct, contract, loyaltyTokenContract } = useStateContext();
 
     const addAProduct = async () => {
 
@@ -31,7 +31,7 @@ function UploadProduct() {
         console.log(ethers.utils.parseEther(approvalTokens.toString()))
 
     try {
-        const transaction = await loyaltyTokenContract.approve(loyaltyTokenContract.address, ethers.utils.parseEther(approvalTokens.toString()));
+        const transaction = await loyaltyTokenContract.approve(contract.address, ethers.utils.parseEther(approvalTokens.toString()));
         const transactionReceipt = await transaction.wait();
         
         const data = await addProduct(name.current.value, desc.current.value, _quantity,_priceInEther, 
