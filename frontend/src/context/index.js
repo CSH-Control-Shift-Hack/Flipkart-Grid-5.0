@@ -75,12 +75,6 @@ export const StateContextProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-
-    console.log(contract);
-
-  }, [contract])
-
   const registerSeller = async () => {
 
     const projectData = await contract.registerSeller();

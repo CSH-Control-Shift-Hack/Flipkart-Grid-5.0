@@ -19,8 +19,6 @@ function Cart() {
 
   useEffect(() => {
 
-    console.log(items)
-
     let totalCost = 0, totalLoyaltyTokensUsed = 0;
 
     for(let i = 0; i < items.length; i++) {
@@ -32,9 +30,6 @@ function Cart() {
       quantities.push(currQuantity)
       fullPaymentInMatic.push(currFullPaymentInMatic)
 
-      console.log(currProduct.price)
-
-
        if (currFullPaymentInMatic) {
         totalCost += ethers.utils.formatEther(currProduct.price.toString()) * currQuantity;
       } else {
@@ -45,14 +40,24 @@ function Cart() {
         // Add the amount of loyalty tokens used for this product to totalLoyaltyTokensUsed
         totalLoyaltyTokensUsed += ethers.utils.formatEther(currProduct.loyaltyTokensAccepted.toString()) * currQuantity;
       }
-
-      setTotalPrice(totalCost)
-      setPayableInFlips(totalLoyaltyTokensUsed)
     }
+
+    setTotalPrice(totalCost)
+      setPayableInFlips(totalLoyaltyTokensUsed)
+      
+      setProductIds(productIds)
+      setQuantities(quantities)
+      setFullPaymentInMatic(fullPaymentInMatic)
+
+
 
   }, [items])
 
+  console.log(totalPrice, payableInFlips)
+  console.log(productIds, quantities, fullPaymentInMatic)
+
   const purchase = async (e) => {
+    console.log(fullPaymentInMatic)
     e.preventDefault();
 
     setLoading(true);
