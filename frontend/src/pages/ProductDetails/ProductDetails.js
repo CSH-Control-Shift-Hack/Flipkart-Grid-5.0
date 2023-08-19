@@ -65,7 +65,7 @@ function ProductDetails() {
               <h2 className="text-4xl font-semibold">{myProduct?.name}</h2>
               <h4 className="text-slate-600 mt-3">{myProduct?.description}</h4>
               <h3 className="font-semibold text-2xl mt-2">
-                {myProduct?.price} MATIC ({myProduct?.loyaltyTokensAccepted}{" "}
+                {ethers.utils.formatEther(myProduct?.price.toString())} MATIC ({ethers.utils.formatEther(myProduct?.loyaltyTokensAccepted.toString())}{" "}
                 FLIPS can be used)
               </h3>
             </div>

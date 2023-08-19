@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { changeCurrProduct } from "../actions/index"
+import { ethers } from "ethers";
 
 function Card({item}) {
   
@@ -33,7 +34,7 @@ function Card({item}) {
             {item?.description.slice(0,50)}
           </h3>
           <h3 className="mt-4 text-center font-semibold bg-[#c6e7ec] pt-3 pb-3 border-t-[2px] border-slate-400">
-            {item?.price} MATIC
+            {ethers.utils.formatEther(item?.price.toString())} MATIC
           </h3>
         </div>
       </section>
