@@ -6,8 +6,8 @@ import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json
 const StateContext = createContext();
 
 // These addresses need to be changed every time
-const loyaltyAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
-const lrtAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+const loyaltyAddress = "0x0b1665C02F0bcAd9D15AEF2d3Af31acaB50Ad020"
+const lrtAddress = "0xa1027BaF2046aCa92200A3faB526c28271AB0f2A"
 
 export const StateContextProvider = ({ children }) => {
 
