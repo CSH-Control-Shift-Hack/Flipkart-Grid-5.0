@@ -14,7 +14,7 @@ contract LoyaltyRewardToken is ERC20, Ownable {
 
     // Decay mechanism
     uint256 public constant DECAY_RATE = 5; // 5%
-    uint256 public constant DECAY_INTERVAL = 180 days; // 6 months
+    uint256 public constant DECAY_INTERVAL = 30 days; // 6 months
     mapping(address => uint256) public lastActive;
 
     // Seller issuance cap

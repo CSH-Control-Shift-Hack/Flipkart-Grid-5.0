@@ -6,16 +6,33 @@ import { ethers } from "ethers";
 
 function Cart() {
 
-  const { contract, purchaseProducts } = useStateContext();
+  const { contract, currentAccount, purchaseProducts, getLRTOfUser } = useStateContext();
 
   const [items, setItems] = useState(JSON.parse(localStorage.getItem("flipkart")));
   const [totalPrice, setTotalPrice] = useState(0);
   const [payableInFlips, setPayableInFlips] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const [flipBalance, setFlipBalance] = useState(0)
+
   const [productIds, setProductIds] = useState([])
   const [quantities, setQuantities] = useState([])
   const [fullPaymentInMatic, setFullPaymentInMatic] = useState([])
+
+  const fetchLRTOfUser = async () => {
+    try {
+      const data = await getLRTOfUser();
+      console.log("flips received: ", ethers.utils.formatEther(data))
+      setFlipBalance(ethers.utils.formatEther(data))
+    } catch(e) {
+      console.log("error in fetching flips of user");
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    fetchLRTOfUser();
+  }, [contract, currentAccount])
 
   useEffect(() => {
 
@@ -43,13 +60,11 @@ function Cart() {
     }
 
     setTotalPrice(totalCost)
-      setPayableInFlips(totalLoyaltyTokensUsed)
-      
-      setProductIds(productIds)
-      setQuantities(quantities)
-      setFullPaymentInMatic(fullPaymentInMatic)
-
-
+    setPayableInFlips(totalLoyaltyTokensUsed)
+    
+    setProductIds(productIds)
+    setQuantities(quantities)
+    setFullPaymentInMatic(fullPaymentInMatic)
 
   }, [items])
 
@@ -84,13 +99,17 @@ function Cart() {
               <h3>{totalPrice} MATIC</h3>
             </div>
             <div className="flex justify-between">
-              <h3>FLIPS Available</h3>
-              <h3>{payableInFlips}</h3>
+              <h3>FLIP Balance</h3>
+              <h3>{flipBalance}</h3>
             </div>
           </div>
           <div className="flex text-lg font-semibold justify-between pt-3 pb-3">
             <h3>Total MATIC payable</h3>
             <h3>{totalPrice - payableInFlips} MATIC</h3>
+          </div>
+          <div className="flex text-lg font-semibold justify-between pt-3 pb-3">
+            <h3>Total FLIPs payable</h3>
+            <h3>{payableInFlips} FLIPS</h3>
           </div>
           <h2 onClick={(e) => {
             purchase(e);
@@ -118,13 +137,17 @@ function Cart() {
               <h3>{totalPrice} MATIC</h3>
             </div>
             <div className="flex justify-between">
-              <h3>FLIPS Available</h3>
-              <h3>{payableInFlips}</h3>
+              <h3>FLIP Balance</h3>
+              <h3>{flipBalance}</h3>
             </div>
           </div>
           <div className="flex text-lg font-semibold justify-between pt-3 pb-3">
             <h3>Total MATIC payable</h3>
             <h3>{totalPrice - payableInFlips} MATIC</h3>
+          </div>
+          <div className="flex text-lg font-semibold justify-between pt-3 pb-3">
+            <h3>Total FLIPs payable</h3>
+            <h3>{payableInFlips} FLIPS</h3>
           </div>
           <h2 onClick={(e) => {
             purchase(e);
