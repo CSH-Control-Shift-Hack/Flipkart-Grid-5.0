@@ -1,19 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import LeaderBoardCard from "../../components/LeaderBoardCard";
 import { useStateContext } from "../../context";
 
 function LeaderBoard() {
 
-  const { getAllUsers } = useStateContext();
+  const [leaders, setLeaders] = useState([])
 
-  const getLeaderBoard = async() => {
-    const data = await getAllUsers();
-    console.log(data)
+  const { getLeaderBoard } = useStateContext();
+
+  const getLeaders = async() => {
+    const data = await getLeaderBoard();
+    console.log("leaderboard: ", data)
+    setLeaders(data)
   }
 
   useEffect(()=>{
-    getLeaderBoard()
+    getLeaders()
   },[])
 
   return (
@@ -24,9 +27,13 @@ function LeaderBoard() {
           LeaderBoard
         </h2>
         <section className="pt-8 pb-8 flex flex-col gap-[10px]">
-          <LeaderBoardCard />
-          <LeaderBoardCard />
-          <LeaderBoardCard />
+        {
+          leaders.length === 0 ? (
+            <h1 className="text-center text-red-500 text-lg" >No users in the leaderboard currently! Check again after some time!</h1>
+          ) : leaders.map((item, index) => (
+            <LeaderBoardCard />
+          ))
+        }
         </section>
       </div>
     </div>

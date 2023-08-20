@@ -11,7 +11,7 @@ function LeaderBoardCard() {
         </div>
       </div>
       <div className="flex flex-col justify-center">
-        <h2 className="font-semibold">10 FLIPS</h2>
+        <h2 className="font-semibold">10 Points</h2>
       </div>
     </div>
   );

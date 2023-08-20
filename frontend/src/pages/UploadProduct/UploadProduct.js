@@ -28,7 +28,6 @@ function UploadProduct() {
         let _loyaltyTokensInEther = ethers.utils.parseEther(_loyaltyTokens);
 
        let approvalTokens = parseFloat(_rewardPoints) * parseFloat(_quantity);
-        console.log(ethers.utils.parseEther(approvalTokens.toString()))
 
     try {
         const transaction = await loyaltyTokenContract.approve(contract.address, ethers.utils.parseEther(approvalTokens.toString()));

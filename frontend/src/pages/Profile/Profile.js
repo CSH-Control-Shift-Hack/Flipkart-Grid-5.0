@@ -5,9 +5,11 @@ import Card from "../../components/ProductCard";
 import { Link, useNavigate } from "react-router-dom";
 import Rewards from "./Rewards";
 import { useStateContext } from "../../context";
+import { ethers } from "ethers";
 
 function Profile() {
   const [visible, setVisible] = useState(0);
+  const [flips, setFlips] = useState(0)
 
   const nav = useNavigate();
 
@@ -24,7 +26,8 @@ function Profile() {
     getUserProducts,
     getUserOrders,
     searchSeller,
-    searchUser
+    searchUser,
+    getLRTOfUser
   } = useStateContext();
 
   const [products, setProducts] = useState([]);
@@ -32,9 +35,10 @@ function Profile() {
   const getProducts = async () => {
     try {
       const data = await getUserProducts();
-      console.log(data);
+      console.log("user products: ", data);
       setProducts(data);
     } catch (e) {
+      console.log("error in fetching user products");
       console.log(e);
     }
   };
@@ -44,9 +48,10 @@ function Profile() {
   const getOrders = async () => {
     try {
       const data = await getUserOrders();
-      console.log(data);
+      console.log("user orders: ", data);
       setOrders(data);
     } catch (e) {
+      console.log("error in fetching user orders");
       console.log(e);
     }
   };
@@ -56,9 +61,10 @@ function Profile() {
   const sellerSearch = async () => {
     try {
       const data = await searchSeller();
-      console.log("seller search:", data?.sellerAddress);
+      console.log("seller address:", data?.sellerAddress);
       setIsSeller(data);
     } catch (e) {
+      console.log("error in check seller");
       console.log(e);
     }
   };
@@ -68,14 +74,25 @@ function Profile() {
   const userSearch = async () => {
     try {
       const data = await searchUser();
-      console.log(data?.userAddress);
+      console.log("user address: ", data?.userAddress);
       setIsUser(data);
     } catch (e) {
+      console.log("error in check user");
       console.log(e);
     }
   };
 
-  console.log(orders)
+  const fetchLRTOfUser = async () => {
+    try {
+      const data = await getLRTOfUser();
+      console.log("flips received: ", ethers.utils.formatEther(data))
+      setFlips(ethers.utils.formatEther(data))
+    } catch(e) {
+      console.log("error in fetching flips of user");
+      console.log(e)
+    }
+  }
+
 
   useEffect(() => {
     if (contract) {
@@ -83,6 +100,7 @@ function Profile() {
       getOrders();
       sellerSearch()
       userSearch()
+      fetchLRTOfUser()
     }
   }, [contract, currentAccount]);
 
@@ -126,7 +144,7 @@ function Profile() {
           <div className="flex justify-center gap-[15px]">
             <div className="flex flex-col justify-center">
               <h3 className="text-center font-semibold text-xl">
-                FLIPS Available: 5
+                FLIPS Available: {flips}
               </h3>
             </div>
             <h3
@@ -148,7 +166,7 @@ function Profile() {
           <div className="flex justify-center gap-[15px]">
             <div className="flex flex-col justify-center">
               <h3 className="text-center font-semibold text-xl">
-                FLIPS Available: 5
+                FLIPS Available: {flips}
               </h3>
             </div>
             <h3
@@ -173,7 +191,7 @@ function Profile() {
           </section>
         </div>
         <div className={`md:mt-8 mt-5 ${visible === 2 ? "" : "hidden"}`}>
-          <Rewards />
+          <Rewards flipBalance={flips} orderLength={orders.length} />
         </div>
       </div>
     </div>

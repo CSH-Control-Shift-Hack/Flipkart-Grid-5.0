@@ -24,6 +24,7 @@ function Exchange() {
           }
           
       } catch (e) {
+        console.log("error in exchange")
         console.log(e);
       }
   };

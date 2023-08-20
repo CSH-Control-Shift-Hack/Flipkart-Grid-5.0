@@ -6,8 +6,8 @@ import loyaltyToken from "../artifacts/contracts/LRT.sol/LoyaltyRewardToken.json
 const StateContext = createContext();
 
 // These addresses need to be changed every time
-const loyaltyAddress = "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E"
-const lrtAddress = "0x09635F643e140090A9A8Dcd712eD6285858ceBef"
+const loyaltyAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+const lrtAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 export const StateContextProvider = ({ children }) => {
 
@@ -102,7 +102,7 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const exchangeMATICForLRT = async (_amount) => {
-    console.log(_amount)
+    console.log("Amount received for exchangeMATICForLRT:", _amount)
 
     const projectData = await contract.exchangeMATICForLRT({ value: ethers.utils.parseEther(_amount) });
   };
@@ -135,7 +135,6 @@ export const StateContextProvider = ({ children }) => {
   };
 
   const getAllProducts = async () => {
-    console.log("AAJA")
     const projectData = await contract.getAllProducts()
 
     const AllProducts = projectData.map((product, i) => ({
@@ -154,7 +153,6 @@ export const StateContextProvider = ({ children }) => {
   }
 
   const getUserOrders = async () => {
-    console.log("AAJA")
     const projectData = await contract.getUserOrders(currentAccount)
 
     const AllProducts = projectData.map((product, i) => ({
@@ -173,7 +171,6 @@ export const StateContextProvider = ({ children }) => {
   }
 
   const getUserProducts = async () => {
-    console.log("AAJA")
     const projectData = await contract.getAllProducts()
 
     const AllProducts = projectData.map((product, i) => ({
@@ -193,7 +190,7 @@ export const StateContextProvider = ({ children }) => {
     return final
   }
 
-  const getAllUsers = async () => {
+  const getLeaderboard = async () => {
     const projectData = await contract.leaderboard
     return projectData
   }
@@ -223,6 +220,12 @@ export const StateContextProvider = ({ children }) => {
 
   }
 
+  const getLRTOfUser = async() => {
+    const data = await loyaltyTokenContract.balanceOf(currentAccount);
+
+    return data;
+  }
+
 
   return (
     <StateContext.Provider
@@ -238,7 +241,7 @@ export const StateContextProvider = ({ children }) => {
         withdrawTokens,
         withdrawMATIC,
         getAllProducts,
-        getAllUsers,
+        getLeaderboard,
         connectToMetaMask,
         isConnected,
         registerUser,
@@ -246,7 +249,8 @@ export const StateContextProvider = ({ children }) => {
         getUserOrders,
         searchSeller,
         searchUser,
-        currentAccount
+        currentAccount,
+        getLRTOfUser
       }}
     >
       {children}

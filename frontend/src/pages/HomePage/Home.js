@@ -10,15 +10,13 @@ function Home() {
     const getProducts = async () => {
     try {
         const data = await getAllProducts();
-        console.log(data)
+        console.log("all products: ", data)
         setProducts(data)
     } catch (e) {
+      console.log("error in fetching all products")
       console.log(e);
     }
   };
-
-
-  console.log(products)
 
 
   useEffect(() => {

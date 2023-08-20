@@ -13,10 +13,6 @@ function ProductDetails() {
 
   const myProduct = useSelector((state) => state.changeCurrProduct);
 
-  console.log(myProduct);
-
-  console.log(myProduct)
-
   const addToCart = () => {
     let data = []
     data = JSON.parse(localStorage.getItem("flipkart"));
@@ -44,9 +40,8 @@ function ProductDetails() {
     }
     else{
       localStorage.setItem("flipkart", JSON.stringify([{product:myProduct, quantity:count, fullPaymentInMatic: true}]));
-      console.log("hi")
     }
-    console.log(data);
+    
   };
 
   return (

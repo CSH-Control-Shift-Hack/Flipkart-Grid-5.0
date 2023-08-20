@@ -54,7 +54,7 @@ function Cart() {
   }, [items])
 
   const purchase = async (e) => {
-    console.log(fullPaymentInMatic)
+    console.log("fullPaymentInMatic: ", fullPaymentInMatic)
     e.preventDefault();
 
     setLoading(true);
