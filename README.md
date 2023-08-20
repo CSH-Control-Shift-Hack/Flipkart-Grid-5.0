@@ -69,5 +69,5 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for more 
 
 ## 🌐 Connect with Us
 
-- [Visit our Platform](#)
+- [Visit our Platform](https://tight-sky-1919.on.fleek.co/)
 - [Read our Documentation](https://docs.google.com/document/d/1Zfp55chiDN3hmskF9sUsL7w-Yl7H85FTG993z51lgzA/edit?usp=sharing)
