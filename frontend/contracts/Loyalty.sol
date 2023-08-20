@@ -8,6 +8,8 @@ import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 contract ECommerceLoyalty is AutomationCompatibleInterface {
     using SafeMath for uint256;
 
+    error InvalidMatidSent(uint256 _maticSent);
+
     // Structs
     struct User {
         address userAddress;
@@ -126,17 +128,31 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
         
         require(_productIds.length == _quantities.length, "Mismatch in product IDs and quantities length");
 
+        // Check if the ordered quantity for each product is available
+        for (uint256 i = 0; i < _productIds.length; i++) {
+            require(products[_productIds[i]].quantity >= _quantities[i], "Ordered quantity not available");
+        }
+
         uint256 commission = (totalCost * COMMISSION) / 100; // 5% commission in MATIC
         uint256 payableInMatic = totalCost - totalLoyaltyTokensUsed; // Remaining amount to be paid in MATIC
 
-        require(msg.value >= payableInMatic, "Incorrect MATIC sent");
+        if(msg.value < payableInMatic) {
+            
+            revert InvalidMatidSent(payableInMatic);
+        }
+
+        // require(msg.value >= payableInMatic, "Incorrect MATIC sent");
 
         // Transfer commission to the contract
         payable(address(this)).transfer(commission);
 
         // Distribute the remaining MATIC (after commission) among sellers
         for (uint256 i = 0; i < _productIds.length; i++) {
-            Product memory product = products[_productIds[i]];
+            Product storage product = products[_productIds[i]]; // Use storage to modify the product directly
+
+            // Reduce product's quantity
+            product.quantity = product.quantity.sub(_quantities[i]);
+            
             uint256 productCost = product.price * _quantities[i];
 
             // Calculate 10% of the selling price of the product
@@ -280,11 +296,15 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
 
     // Function to exchange LRT for MATIC
     function exchangeLRTForMATIC(uint256 lrtAmount) external {
+
         require(lrtAmount > 0, "Amount should be greater than 0");
-        uint256 maticAmount = lrtAmount.mul(RATE);
+
+        uint256 maticAmount = lrtAmount;
 
         // Transfer LRT from seller to this contract
         require(loyaltyToken.transferFrom(msg.sender, address(this), lrtAmount), "LRT transfer failed");
+
+        require(address(this).balance >= maticAmount, "Not enough MATIC in contract");
 
         // Send MATIC to seller
         payable(msg.sender).transfer(maticAmount);
@@ -295,7 +315,7 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
     // Function to exchange MATIC for LRT
     function exchangeMATICForLRT() public payable {
         require(msg.value > 0, "MATIC amount should be greater than 0");
-        uint256 lrtAmount = msg.value.div(RATE);
+        uint256 lrtAmount = msg.value;
 
         // Ensure the contract has enough LRT
         require(loyaltyToken.balanceOf(address(this)) >= lrtAmount, "Not enough LRT in contract");

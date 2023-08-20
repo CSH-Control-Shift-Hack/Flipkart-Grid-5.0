@@ -14,7 +14,7 @@ contract LoyaltyRewardToken is ERC20, Ownable {
 
     // Decay mechanism
     uint256 public constant DECAY_RATE = 5; // 5%
-    uint256 public constant DECAY_INTERVAL = 180 days; // 6 months
+    uint256 public constant DECAY_INTERVAL = 30 days; // 6 months
     mapping(address => uint256) public lastActive;
 
     // Seller issuance cap
@@ -40,4 +40,13 @@ contract LoyaltyRewardToken is ERC20, Ownable {
         lastActive[from] = block.timestamp;
         lastActive[to] = block.timestamp;
     }
+
+    // Function to mint new tokens
+    function mint(address to, uint256 amount) public onlyOwner {
+        require(to != address(0), "Mint to the zero address");
+        require(amount > 0, "Amount must be greater than 0");
+        
+        _mint(to, amount);
+    }
+    
 }
