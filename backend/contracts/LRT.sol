@@ -40,4 +40,13 @@ contract LoyaltyRewardToken is ERC20, Ownable {
         lastActive[from] = block.timestamp;
         lastActive[to] = block.timestamp;
     }
+
+    // Function to mint new tokens
+    function mint(address to, uint256 amount) public onlyOwner {
+        require(to != address(0), "Mint to the zero address");
+        require(amount > 0, "Amount must be greater than 0");
+        
+        _mint(to, amount);
+    }
+    
 }

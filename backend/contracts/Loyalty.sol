@@ -128,6 +128,11 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
         
         require(_productIds.length == _quantities.length, "Mismatch in product IDs and quantities length");
 
+        // Check if the ordered quantity for each product is available
+        for (uint256 i = 0; i < _productIds.length; i++) {
+            require(products[_productIds[i]].quantity >= _quantities[i], "Ordered quantity not available");
+        }
+
         uint256 commission = (totalCost * COMMISSION) / 100; // 5% commission in MATIC
         uint256 payableInMatic = totalCost - totalLoyaltyTokensUsed; // Remaining amount to be paid in MATIC
 
@@ -143,7 +148,11 @@ contract ECommerceLoyalty is AutomationCompatibleInterface {
 
         // Distribute the remaining MATIC (after commission) among sellers
         for (uint256 i = 0; i < _productIds.length; i++) {
-            Product memory product = products[_productIds[i]];
+            Product storage product = products[_productIds[i]]; // Use storage to modify the product directly
+
+            // Reduce product's quantity
+            product.quantity = product.quantity.sub(_quantities[i]);
+            
             uint256 productCost = product.price * _quantities[i];
 
             // Calculate 10% of the selling price of the product
